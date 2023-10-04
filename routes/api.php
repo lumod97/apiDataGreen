@@ -18,4 +18,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('get-users','ServiciosTransporteController@getServiciosTransporte');
+Route::get('get-users','App\Http\Controllers\ServiciosTransporteController@getServiciosTransporte');
