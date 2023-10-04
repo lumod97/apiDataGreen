@@ -57,7 +57,9 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "kylekatarnls/update-helper": true,
+            "symfony/thanks": true
         }
     },
     "minimum-stability": "stable",
