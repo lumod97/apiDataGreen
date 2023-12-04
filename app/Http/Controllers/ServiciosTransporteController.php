@@ -38,8 +38,34 @@ class ServiciosTransporteController extends Controller
         }
     }
 
-    public function getLogs()
+    public function getLogs(Request $request)
     {
-        return DB::select("SELECT * FROM Logs WHERE Parametros LIKE '%000000000EAX%' ORDER BY 1;");
+		return DB::select("select TOP 20 doc.idproducto, doc.descripcion, doc.cantidad, doc.precio_unitario, doc.precio_unitariodscto, doc.fecha_occliente from AgricolaSanJuan_2020..DORDENCOMPRA doc INNER JOIN AgricolaSanJuan_2020..PRODUCTOS p ON p.IDPRODUCTO = doc.idproducto
+        where p.DESCRIPCION like '%".$request['busqueda']."%';", []);
+    }
+
+    public function getProducts(Request $request)
+    {
+		return DB::select("select TOP 100 doc.idproducto, doc.descripcion, doc.cantidad, doc.precio_unitario, doc.precio_unitariodscto, doc.fecha_occliente from AgricolaSanJuan_2020..DORDENCOMPRA doc INNER JOIN AgricolaSanJuan_2020..PRODUCTOS p ON p.IDPRODUCTO = doc.idproducto
+        where p.DESCRIPCION like '%".$request['busqueda']."%';", []);
+    }
+
+    public function getServicios(Request $request)
+    {
+        return DB::select('select IdRuta, r.Dex, SUM(Pasajeros) pasajeros from trx_ServiciosTransporte st INNER JOIN mst_Rutas r ON r.Id = st.IdRuta  where fecha BETWEEN CONVERT(date,getdate()) and CONVERT(date,getdate()) group by IdRuta, r.Dex');
+    }
+
+    public function getAsientosRestantes(Request $request){
+        return DB::select("select st.Id, st.Fecha, st.IdRuta, r.Dex Ruta, v.Id Vehiculo, st.Pasajeros, v.capacidad , SUM(v.Capacidad - st.Pasajeros) AsientosRestantes from trx_ServiciosTransporte st INNER JOIN mst_Rutas r ON r.Id = st.IdRuta INNER JOIN mst_Vehiculos v ON v.Id = st.IdVehiculo where fecha BETWEEN CONVERT(date,getdate()) and CONVERT(date,getdate()) GROUP BY st.Id, st.Fecha, st.IdRuta, r.Dex, st.Pasajeros, v.capacidad, V.Id order by v.Id", []);
+    }
+
+    public function aprobarServicioTransporte(Request $request){
+        $params = [
+            // 'codTransporte',
+            // 'usuario'
+            $request['idServicio'],
+            '72450801'
+        ];
+        return DB::statement("EXEC DataGreen..sp_Dg_Logistica_Movimientos_ServiciosTransporte_Moviles '".$request['idServicio']."', '72450801'", []);
     }
 }
