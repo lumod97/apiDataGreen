@@ -12,7 +12,7 @@ class ServiciosTransporteController extends Controller
 {
     public function getServiciosTransporte(Request $request)
     {
-        // return $request['idServicioTransporte'];
+        //return $request['idServicioTransporte'];
         $idServicioTransporte = $request['idServicioTransporte'];
         $existsServicioTransporte = DB::select("select count(*) response from trx_ServiciosTransporte where Id= '" . $idServicioTransporte . "';")[0];
         if ($existsServicioTransporte->response == 1) {
@@ -36,10 +36,5 @@ class ServiciosTransporteController extends Controller
             //throw $th;
             return ['code' => 500, 'response' => strval($th)];
         }
-    }
-
-    public function getLogs()
-    {
-        return DB::select("SELECT * FROM Logs WHERE Parametros LIKE '%000000000EAX%' ORDER BY 1;");
     }
 }
