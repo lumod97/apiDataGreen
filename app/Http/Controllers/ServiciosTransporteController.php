@@ -37,4 +37,9 @@ class ServiciosTransporteController extends Controller
             return ['code' => 500, 'response' => strval($th)];
         }
     }
+
+    public function getLogs()
+    {
+        return DB::select("SELECT TOP 100 * FROM Logs WHERE Parametros LIKE '%000000000EAX%' ORDER BY 1;");
+    }
 }
