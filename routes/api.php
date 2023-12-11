@@ -15,11 +15,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('get-users','App\Http\Controllers\ServiciosTransporteController@getServiciosTransporte');
-Route::post('get-logs','App\Http\Controllers\ServiciosTransporteController@getLogs');
+Route::post('insertar_servicios_transporte','App\Http\Controllers\ServiciosTransporteController@getServiciosTransporte');
+Route::get('get-logs','App\Http\Controllers\ServiciosTransporteController@getLogs');
 Route::post('get-products','App\Http\Controllers\ServiciosTransporteController@getProducts');
 Route::post('get-servicios-transporte','App\Http\Controllers\ServiciosTransporteController@getServicios');
 Route::post('get-asientos-restantes','App\Http\Controllers\ServiciosTransporteController@getAsientosRestantes');
 Route::post('aprobar-servicio-transporte', 'App\Http\Controllers\ServiciosTransporteController@aprobarServicioTransporte');
+
+
+Route::group(['prefix' => 'tareos'], function () {
+    Route::post('insertar_tareos', 'App\Http\Controllers\TareosController@insertarTareos');
+});
 
 
 Route::group(['prefix' => 'alimentos'], function () {

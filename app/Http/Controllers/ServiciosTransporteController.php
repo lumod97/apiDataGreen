@@ -40,6 +40,6 @@ class ServiciosTransporteController extends Controller
 
     public function getLogs()
     {
-        return DB::select("SELECT TOP 100 * FROM Logs WHERE Parametros LIKE '%000000000EAX%' ORDER BY 1;");
+        return DB::select("SELECT TOP 100 * FROM DataGreen..Logs WHERE Parametros LIKE '%000000000EAX%' ORDER BY 1;");
     }
 }
