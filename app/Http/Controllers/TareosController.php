@@ -17,7 +17,7 @@ class TareosController extends Controller
         try {
             $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovil..sp_Dgm_Tareos_TransferirTareo_V2 ?;", $params);
             // return response()->json();
-            return ['code' => 200, 'newId' => "nada mano", 'response' => $data];
+            return ['code' => 200, 'response' => $data];
         } catch (\Throwable $th) {
             //throw $th;
             return ['code' => 500, 'response' => strval($th)];

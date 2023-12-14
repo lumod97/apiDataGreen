@@ -27,6 +27,9 @@ Route::group(['prefix' => 'tareos'], function () {
     Route::post('insertar_tareos', 'App\Http\Controllers\TareosController@insertarTareos');
 });
 
+Route::group(['prefix' => 'sistemas'], function () {
+    Route::post('obtener_usuarios', 'App\Http\Controllers\SistemasControler@obtenerUsuarios');
+});
 
 Route::group(['prefix' => 'alimentos'], function () {
     Route::post('get-alimentos', 'App\Http\Controllers\AlimentosController@getAlimentos');
