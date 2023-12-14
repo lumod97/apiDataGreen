@@ -18,7 +18,7 @@ class TareosController extends Controller
             $request["mac"],
             $request["user_login"],
             $request["app"],
-            $request["sp_Dgm_Tareos_TransferirTareo_V2"],
+            "sp_Dgm_Tareos_TransferirTareo_V2",
             $request["parametros"]
         ];
 
