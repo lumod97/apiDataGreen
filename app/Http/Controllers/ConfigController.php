@@ -25,8 +25,8 @@ class ConfigController extends Controller
     public function registrarTerminal(Request $request){
 
         // VERIFICAMOS LA EXISTENCIA DEL REGISTRO SIN ID Y CON LOS PARAMETROS ENVIADOS
-        $exists = DB::select("SELECT COUNT(*) exist FROM DataGreenMovil_TestEnviroment..Cns_Terminales WHERE Mac = '".$request['mac']."' and Ip = '".$request['ip']."';")[0]->exist;
-        $newId = DB::select("SELECT MAX(Id) + 1 newId FROM DataGreenMovil_TestEnviroment..Cns_Terminales")[0]->newId;
+        $exists = DB::select("SELECT COUNT(*) exist FROM Datagreen..Cns_Terminales WHERE Mac = '".$request['mac']."' and Ip = '".$request['ip']."';")[0]->exist;
+        $newId = DB::select("SELECT MAX(Id) + 1 newId FROM Datagreen..Cns_Terminales")[0]->newId;
 
         if($exists > 0){
             return ['code' => 208, 'response' => ['message' => 'El terminal se ha registrado con éxito en los servidores.', 'deviceId' => $newId]];
@@ -41,7 +41,7 @@ class ConfigController extends Controller
                 $request['tipo']
             ];
     
-            $statement = "INSERT INTO DataGreenMovil_TestEnviroment..Cns_Terminales VALUES( ?, ?, ?, ?, ?, GETDATE(), GETDATE(), 'AC', ?)";
+            $statement = "INSERT INTO Datagreen..Cns_Terminales VALUES( ?, ?, ?, ?, ?, GETDATE(), GETDATE(), 'AC', ?)";
     
             try {
                 DB::insert($statement, $params);
