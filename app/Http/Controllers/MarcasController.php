@@ -11,7 +11,7 @@ class MarcasController extends Controller
     {
         try {
             $jsonMarcas = json_encode(['marcas' => $request['marcas']]);
-            $data = DB::statement("EXEC DataGreenMovil_TestEnviroment..sp_CnsMobile_insertar_marcas ?;", [$jsonMarcas]);
+            $data = DB::statement("EXEC Datagreen..sp_CnsMobile_insertar_marcas ?;", [$jsonMarcas]);
             return ['code' => 200, 'newId' => "nada mano", 'response' => strval("AGREGADO CORRECTAMENTE")];
         } catch (\Throwable $th) {
             throw $th;

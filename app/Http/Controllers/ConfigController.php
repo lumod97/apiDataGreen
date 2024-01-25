@@ -9,7 +9,7 @@ class ConfigController extends Controller
 {
     public function obtenerDataInicial(Request $request){
         $statementPuertas = "SELECT * FROM Datagreen..Cns_Puertas WHERE IdEstado = 'AC' AND IdTipo = 0;";
-        $statementTerminales = "SELECT * FROM DataGreenMovil_TestEnviroment..Cns_Terminales WHERE IdEstado = 'AC';";
+        $statementTerminales = "SELECT * FROM Datagreen..Cns_Terminales WHERE IdEstado = 'AC';";
 
         $dataPuertas = DB::select($statementPuertas);
         $dataTerminales = DB::select($statementTerminales);
