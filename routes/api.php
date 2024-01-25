@@ -27,8 +27,21 @@ Route::group(['prefix' => 'tareos'], function () {
     Route::post('insertar_tareos', 'App\Http\Controllers\TareosController@insertarTareos');
 });
 
+Route::group(['prefix' => 'personas'], function () {
+    Route::get('obtener_personas_con_observacion', 'App\Http\Controllers\PersonasController@obtenerPersonasConObservacion');
+});
+
+Route::group(['prefix' => 'marcas'], function () {
+    Route::post('transferir_marcas', 'App\Http\Controllers\MarcasController@transferirMarcas');
+});
+
 Route::group(['prefix' => 'sistemas'], function () {
     Route::post('obtener_usuarios', 'App\Http\Controllers\SistemasControler@obtenerUsuarios');
+});
+
+Route::group(['prefix' => 'configuracion'], function () {
+    Route::post('obtener_data_inicial', 'App\Http\Controllers\ConfigController@obtenerDataInicial');
+    Route::post('registrar_terminal', 'App\Http\Controllers\ConfigController@registrarTerminal');
 });
 
 Route::group(['prefix' => 'alimentos'], function () {

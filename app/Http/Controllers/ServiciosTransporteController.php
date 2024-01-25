@@ -28,6 +28,16 @@ class ServiciosTransporteController extends Controller
             $jsonPasajeros = json_encode(['pasajeros' => $request['pasajeros']]);
             $queryUnidad = "INSERT INTO trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
             DB::unprepared($queryUnidad);
+
+            // $logParams = [
+            //     $request["mac"],
+            //     $request["user_login"],
+            //     $request["app"],
+            //     "sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
+            //     $request["parametros"]
+            // ];
+            // DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
+
             $result = DB::statement("EXEC sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte ?;", [$jsonPasajeros]);
             return ['code' => 200, 'newId' => "nada mano", 'response' => strval("AGREGADO CORRECTAMENTE")];
         }
