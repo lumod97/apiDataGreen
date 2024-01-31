@@ -23,7 +23,7 @@ class TareosController extends Controller
         ];
 
         try {
-            $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovil_TestEnviroment..sp_Dgm_Tareos_TransferirTareo_V2 ?;", $params);
+            $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovil..sp_Dgm_Tareos_TransferirTareo_V2 ?;", $params);
             // return response()->json();
             // DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
             return ['code' => 200, 'response' => $data];

@@ -35,6 +35,10 @@ Route::group(['prefix' => 'marcas'], function () {
     Route::post('transferir_marcas', 'App\Http\Controllers\MarcasController@transferirMarcas');
 });
 
+Route::group(['prefix' => 'logs'], function () {
+    Route::post('transferir_logs', 'App\Http\Controllers\LogsController@transferirLogs');
+});
+
 Route::group(['prefix' => 'sistemas'], function () {
     Route::post('obtener_usuarios', 'App\Http\Controllers\SistemasControler@obtenerUsuarios');
 });
