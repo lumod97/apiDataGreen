@@ -40,6 +40,10 @@ Route::group(['prefix' => 'logs'], function () {
 });
 
 Route::group(['prefix' => 'sistemas'], function () {
+    Route::group(['prefix' => 'soporte'], function () {
+        Route::post('transferir_mantenimientos', 'App\Http\Controllers\Sistemas\MantenimientosController@transferirMantenimientos');
+    });
+
     Route::post('obtener_usuarios', 'App\Http\Controllers\SistemasControler@obtenerUsuarios');
 });
 
