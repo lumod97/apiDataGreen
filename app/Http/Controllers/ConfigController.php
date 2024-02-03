@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\DB;
 class ConfigController extends Controller
 {
     public function obtenerDataInicial(Request $request){
-        $statementPuertas = "SELECT * FROM DatagreenMovil_TestEnviroment..Cns_Puertas WHERE IdEstado = 'AC' AND IdTipo = 0;";
-        $statementTerminales = "SELECT * FROM DatagreenMovil_TestEnviroment..Cns_Terminales WHERE IdEstado = 'AC';";
+        $statementPuertas = "SELECT * FROM DatagreenMovil..Cns_Puertas WHERE IdEstado = 'AC' AND IdTipo = 0;";
+        $statementTerminales = "SELECT * FROM DatagreenMovil..Cns_Terminales WHERE IdEstado = 'AC';";
         $statementAcciones = "SELECT * FROM DataGreen..Cns_Acciones";
 
         $dataPuertas = DB::select($statementPuertas);
@@ -28,8 +28,8 @@ class ConfigController extends Controller
     public function registrarTerminal(Request $request){
 
         // VERIFICAMOS LA EXISTENCIA DEL REGISTRO SIN ID Y CON LOS PARAMETROS ENVIADOS
-        $exists = DB::select("SELECT COUNT(*) exist FROM DatagreenMovil_TestEnviroment..Cns_Terminales WHERE Mac = '".$request['mac']."' and Ip = '".$request['ip']."';")[0]->exist;
-        $newId = DB::select("SELECT MAX(Id) + 1 newId FROM DatagreenMovil_TestEnviroment..Cns_Terminales")[0]->newId;
+        $exists = DB::select("SELECT COUNT(*) exist FROM DatagreenMovil..Cns_Terminales WHERE Mac = '".$request['mac']."' and Ip = '".$request['ip']."';")[0]->exist;
+        $newId = DB::select("SELECT MAX(Id) + 1 newId FROM DatagreenMovil..Cns_Terminales")[0]->newId;
 
         if($exists > 0){
             return ['code' => 208, 'response' => ['message' => 'El terminal se ha registrado con éxito en los servidores.', 'deviceId' => $newId]];
@@ -44,7 +44,7 @@ class ConfigController extends Controller
                 $request['tipo']
             ];
     
-            $statement = "INSERT INTO DatagreenMovil_TestEnviroment..Cns_Terminales VALUES( ?, ?, ?, ?, ?, GETDATE(), GETDATE(), 'AC', ?)";
+            $statement = "INSERT INTO DatagreenMovil..Cns_Terminales VALUES( ?, ?, ?, ?, ?, GETDATE(), GETDATE(), 'AC', ?)";
     
             try {
                 DB::insert($statement, $params);
