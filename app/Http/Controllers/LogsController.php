@@ -13,7 +13,7 @@ class LogsController extends Controller
             $params = [
                 json_encode(['logs' => $request['logs']])
             ];
-            $response = DB::statement("EXEC sp_insertar_logs_mobile ?", $params);
+            // $response = DB::statement("EXEC sp_insertar_logs_mobile ?", $params);
             return ['code' => 200, 'response' => $params];
         } catch (\Throwable $th) {
             throw $th;
