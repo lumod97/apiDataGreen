@@ -39,7 +39,7 @@ class PdfController extends Controller
                 return 'El trabajador no cuenta con movimientos de vacaciones.';
             }
 
-            $template_file_route = trim('raw\\'.$request['template'].'.pdf');
+            $template_file_route = trim('pdf_formats\\'.$request['template'].'.pdf');
             $output = trim('raw\\'.$request['template'].'_#'.'.pdf');
             // $save_file_route = $request['output'];
 
