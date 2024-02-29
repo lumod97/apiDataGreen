@@ -39,8 +39,8 @@ class PdfController extends Controller
                 return 'El trabajador no cuenta con movimientos de vacaciones.';
             }
 
-            $template_file_route = trim('raw\\'.$request['template'].'.pdf');
-            $output = trim('raw\\'.$request['template'].'_#'.'.pdf');
+            $template_file_route = trim('\\raw\\'.$request['template'].'.pdf');
+            $output = trim('\\raw\\'.$request['template'].'_#'.'.pdf');
             // $save_file_route = $request['output'];
 
             if (!isset($template_file_route)) {
@@ -53,32 +53,38 @@ class PdfController extends Controller
                 if(count($data) > 1){
                     for ($i = 0; $i < count($data); $i++) {
                         $pdf = new Pdf($template_file_route);
+                        // return $template_file_route;
                         foreach ($data[$i] as $key => $value) {
                             $params[$key] = $value;
                         }
-                        
-                        $save_file_route = str_replace('#', trim($i . $data[$i]->codigo_general), $output);
-                        
-                        $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route));
-                        
-                        $filesString .=  public_path($save_file_route).' ';
-                        // return $filesString;
-
+                            $save_file_route = str_replace('#', trim($i . $data[$i]->codigo_general), $output);
+                            
+                            $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route));
+                            
+                            $filesString .=  public_path($save_file_route).' ';
+                            // return $filesString;
+    
                         $route = '\\raw\\mixPdf.pdf';
                         
                     }
                     
-                    $command = 'pdftk '.$filesString.' cat output '.public_path('raw\\mixPdf.pdf');
+                    $command = 'pdftk '.$filesString.' cat output '.public_path('\\raw\\mixPdf.pdf');
+                    // return $command;
                     exec($command);
                     
                 }else if(count($data) == 1){
                     foreach ($data[0] as $key => $value) {
                         $params[$key] = $value;
                     }
-                    $pdf = new Pdf($template_file_route);
-                    $save_file_route = str_replace('#', trim($data[0]->codigo_general), $output);
-                    $route = '\\'.$save_file_route;
-                    $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route));
+                    try {
+                        //code...
+                        $pdf = new Pdf($template_file_route);
+                        $save_file_route = str_replace('#', trim($data[0]->codigo_general), $output);
+                        $route = '\\'.$save_file_route;
+                        $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route));
+                    } catch (\Throwable $th) {
+                        throw $th;
+                    }
                 }
                 if ($result == false) {
                     return response(['error' => 'No se ha generado el pdf', 'code' => 500]);

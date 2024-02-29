@@ -39,13 +39,13 @@ Route::group(['prefix' => 'logs'], function () {
     Route::post('transferir_logs', 'App\Http\Controllers\LogsController@transferirLogs');
 });
 
-Route::group(['prefix' => 'sistemas'], function () {
-    Route::group(['prefix' => 'soporte'], function () {
-        Route::post('transferir_mantenimientos', 'App\Http\Controllers\Sistemas\MantenimientosController@transferirMantenimientos');
-    });
+// Route::group(['prefix' => 'sistemas'], function () {
+//     Route::group(['prefix' => 'soporte'], function () {
+//         Route::post('transferir_mantenimientos', 'App\Http\Controllers\Sistemas\MantenimientosController@transferirMantenimientos');
+//     });
 
-    Route::post('obtener_usuarios', 'App\Http\Controllers\SistemasControler@obtenerUsuarios');
-});
+//     Route::post('obtener_usuarios', 'App\Http\Controllers\SistemasControler@obtenerUsuarios');
+// });
 
 Route::post('get_pdf', 'App\Http\Controllers\PdfController@generatePdf');
 
