@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use mikehaertl\pdftk\Pdf;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
+
 
 class PdfController extends Controller
 {
@@ -14,22 +17,37 @@ class PdfController extends Controller
         // return $request['movimientos'];
         $filesString = "";
         if ($request['template'] === 'FORMATO_DE_VACACIONES') {
-            // $paramsSp = [
-            //     $request['movimientos']
-            // ];
             $query = "exec Datagreen..sp_obtenerVacacionesParaFormatoPDF 'vista_normal', '***', '', '', '".json_encode($request['movimientos'])."'";
-            // return $query;
+            $data = DB::select($query);
+        } elseif ($request['template'] === 'FORMATO_COMPENSACION_HORAS_EXTRA') {
+            $query = "exec Datagreen..sp_obtenerCompensacionHorasExtraParaFormatoPDF 'vista_normal', '***', '', '', '".json_encode($request['movimientos'])."'";
             $data = DB::select($query);
             // return $data;
-        } elseif (strpos($request->input('template'), 'FORMATO_COMPENSACION_HORAS_EXTRA') !== false) {
-            $data[0] = [
-                'fecha_actual' => '2024-02-20',
-                'nombres_trabajador' => 'LUIGGI GIUSSEPPI MORETTI DIOSES',
-                'area' => 'Chistemas',
-                'fecha_compensar' => '2024-02-23',
-                'observaciones' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iure modi animi ullam, cumque quae commodi porro minima molestiae nulla quisquam error soluta omnis ratione recusandae fuga consectetur illo, libero eveniet.',
-                'codigo_general' => '72450801'
+        }elseif($request['template'] === 'FORMATO_DE_CERTIFICADO_DE_TRABAJO') {
+            $datos = [
+                'nombres' => 'CESPEDES TENORIO MARIA FRAXILA',
+                'dni' => '72450801',
+                'cargo' => 'OBRERO',
+                'diaD' => '17',
+                'mesD' => 'MAYO',
+                'anioD' => '2023',
+                'diaH' => '01',
+                'mesH' => 'MARZO',
+                'anioH' => '2024',
             ];
+
+            $html = View::make('formats.pdfCertificadoTrabajo', $datos)->render();
+
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+
+            $dompdf->setPaper('A4', 'landscape');
+
+            $dompdf->render();
+
+            return $dompdf->stream('ejemplo.pdf');
+
+
         }
 
         if ($request['modo'] == 'vista') {
