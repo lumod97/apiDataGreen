@@ -47,6 +47,8 @@ Route::group(['prefix' => 'sistemas'], function () {
     Route::post('obtener_usuarios', 'App\Http\Controllers\SistemasControler@obtenerUsuarios');
 });
 
+Route::post('get_pdf', 'App\Http\Controllers\PdfController@generatePdf');
+
 Route::group(['prefix' => 'configuracion'], function () {
     Route::post('obtener_data_inicial', 'App\Http\Controllers\ConfigController@obtenerDataInicial');
     Route::post('registrar_terminal', 'App\Http\Controllers\ConfigController@registrarTerminal');
