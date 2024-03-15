@@ -28,13 +28,13 @@ class TareosController extends Controller
                 "sp_Dgm_Tareos_TransferirTareo_V2",
                 $request["parametros"]
             ];
-            DB::statement("insert into Datagreen..Logsop values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
+            DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
      
             // ENVIAMOS LOS TAREOS PARA SU INSERCIÓN
             $params = [
                 json_encode(['tareos' => $request['tareos']])
             ];
-            $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovilop..sp_Dgm_Tareos_TransferirTareo_V2 ?;", $params);
+            $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovil..sp_Dgm_Tareos_TransferirTareo_V2 ?;", $params);
 
             // RETORNAMOS EL RESPONSE
             return ['code' => 200, 'response' => $data];
