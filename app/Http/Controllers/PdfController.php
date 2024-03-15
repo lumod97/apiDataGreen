@@ -5,8 +5,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use mikehaertl\pdftk\Pdf;
 use Dompdf\Dompdf;
-use Illuminate\Support\Facades\View;
+use Dompdf\Exception as DompdfException;
+use Dompdf\Options;
+use Exception;
 
+use FontLib\Font;
 
 class PdfController extends Controller
 {
@@ -24,6 +27,7 @@ class PdfController extends Controller
             $data = DB::select($query);
             // return $data;
         }elseif($request['template'] === 'FORMATO_DE_CERTIFICADO_DE_TRABAJO') {
+            
             $datos = [
                 'nombres' => 'CESPEDES TENORIO MARIA FRAXILA',
                 'dni' => '72450801',
@@ -36,17 +40,34 @@ class PdfController extends Controller
                 'anioH' => '2024',
             ];
 
-            $html = View::make('formats.pdfCertificadoTrabajo', $datos)->render();
+            // Renderizar la vista a HTML
+            $html = view('formats.pdfCertificadoTrabajo', $datos)->render();
+            $options = new Options();
 
-            $dompdf = new Dompdf();
-            $dompdf->loadHtml($html);
 
-            $dompdf->setPaper('A4', 'landscape');
+            
+                $dompdf = new Dompdf();
+                $options = new Options();
+                $dompdf->loadHtml($html);
+                $dompdf->render();
+                $options->setFontDir(public_path('fonts'));
+                $options->setFontCache(public_path('fonts'));
+                $options->isPhpEnabled(true);
+                $options->isFontSubsettingEnabled(true);
+                $options->setDefaultFont('DejaVuSansMono');
+                $options->setChroot(public_path('font'));
+                $dompdf->setOptions($options);
+                $dompdf->setPaper('A4', 'landscape');
 
-            $dompdf->render();
-
-            return $dompdf->stream('ejemplo.pdf');
-
+                
+                // Cargar el HTML en Dompdf
+                // $dompdf->setOptions($options);
+        
+                // Renderizar el PDF
+        
+                // Descargar el PDF generado
+                return $dompdf->stream('ejemplo.pdf');
+            // Crear una instancia de Dompdf con las opciones configuradas
 
         }
 

@@ -14,7 +14,6 @@
         "laravel/tinker": "^2.7",
         "mikehaertl/php-pdftk": "^0.13.1",
         "setasign/fpdi": "^2.6",
-        "spatie/pdf-to-image": "^1.2",
         "tecnickcom/tcpdf": "^6.6"
     },
     "require-dev": {
