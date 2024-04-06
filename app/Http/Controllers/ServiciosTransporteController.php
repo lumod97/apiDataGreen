@@ -2,20 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Facades\File;
 
 class ServiciosTransporteController extends Controller
 {
     public function getServiciosTransporte(Request $request)
     {
-        //return $request['idServicioTransporte'];
+
+        // SETEAMOS LA ZONA HORARIA PARA OBTENER LA FECHA Y HORA CORRECTAS
+        date_default_timezone_set("America/Lima");
+        // OBTENEMOS LA FECHA Y HORA PARA LA INSERCIÓN DE LOS LOGS
+        $currentDate = date("Y-m-d H:i:s");
+
+        // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
+        File::append(storage_path('logs/log_tareos.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['tareos'])) . PHP_EOL);
+        $logParams = [
+            substr($request['idDispositivo'], 12),
+            $request["user_login"],
+            $request["app"],
+            "sp_Dgm_Tareos_TransferirTareo_V2",
+            $request["parametros"]
+        ];
+
+        DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
+
         $idServicioTransporte = $request['idServicioTransporte'];
         $existsServicioTransporte = DB::select("select count(*) response from trx_ServiciosTransporte where Id= '" . $idServicioTransporte . "';")[0];
-        if ($existsServicioTransporte->response == 1) {
+        if ($existsServicioTransporte->response >= 1) {
             $newId = "EXECUTE sp_Dgm_Gen_obtenerNuevoId ?,?,?";
             $params = [
                 "trx_ServiciosTransporte",
@@ -29,15 +44,6 @@ class ServiciosTransporteController extends Controller
             $queryUnidad = "INSERT INTO trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
             DB::unprepared($queryUnidad);
 
-            // $logParams = [
-            //     $request["mac"],
-            //     $request["user_login"],
-            //     $request["app"],
-            //     "sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
-            //     $request["parametros"]
-            // ];
-            // DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
-
             $result = DB::statement("EXEC sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte ?;", [$jsonPasajeros]);
             return ['code' => 200, 'newId' => "nada mano", 'response' => strval("AGREGADO CORRECTAMENTE")];
         }
@@ -50,6 +56,18 @@ class ServiciosTransporteController extends Controller
 
     public function getLogs()
     {
-        return DB::select("SELECT TOP 100 * FROM DataGreen..Logs WHERE Parametros LIKE '%000000000EAX%' ORDER BY 1;");
+        // return DB::select("SELECT TOP 10 * FROM DataGreen..usuarios");
+        return DB::select("select top 9
+                                st.Id numeroLinea,
+                                st.IdVehiculo fruta,
+                                st.IdRuta variedad,
+                                st.Pasajeros cantidad,
+                                st.Fecha hora,
+                                -- st.IdConductor usuario,
+                                CONCAT_WS(' ', TRIM(p.Paterno), TRIM(p.Materno), TRIM(p.Nombres)) usuario,
+                                st.IdEstado estado
+                            from DataGreenMovil..trx_ServiciosTransporte st
+                            inner join DataGreenMovil..mst_Personas p on p.NroDocumento = st.IdConductor
+                            order by Fecha desc");
     }
 }

@@ -29,6 +29,8 @@ Route::group(['prefix' => 'tareos'], function () {
 
 Route::group(['prefix' => 'personas'], function () {
     Route::get('obtener_personas_con_observacion', 'App\Http\Controllers\PersonasController@obtenerPersonasConObservacion');
+    Route::post('obtener_data_persona', 'App\Http\Controllers\PersonasController@obtenerDataPersona');
+
 });
 
 Route::group(['prefix' => 'marcas'], function () {

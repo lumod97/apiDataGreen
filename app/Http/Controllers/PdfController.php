@@ -54,7 +54,7 @@ class PdfController extends Controller
                 $options->setFontCache(public_path('fonts'));
                 $options->isPhpEnabled(true);
                 $options->isFontSubsettingEnabled(true);
-                $options->setDefaultFont('DejaVuSansMono');
+                $options->setDefaultFont('Times-Roman');
                 $options->setChroot(public_path('font'));
                 $dompdf->setOptions($options);
                 $dompdf->setPaper('A4', 'landscape');
