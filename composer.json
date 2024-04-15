@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.0.2",
         "barryvdh/laravel-dompdf": "^2.0",
+        "barryvdh/laravel-snappy": "^1.0",
         "doctrine/dbal": "^3.7",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
@@ -14,7 +15,9 @@
         "laravel/tinker": "^2.7",
         "mikehaertl/php-pdftk": "^0.13.1",
         "setasign/fpdi": "^2.6",
-        "tecnickcom/tcpdf": "^6.6"
+        "spatie/pdf-to-image": "^2.3",
+        "tecnickcom/tc-lib-barcode": "^2.2",
+        "tecnickcom/tcpdf": "^6.7"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

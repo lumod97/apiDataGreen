@@ -33,7 +33,7 @@
             Se expide la presente a solicitud del interesado y para los fines que estime conveniente.
         </h4>
         <div class="texto_normal" style="width:auto; margin-left: auto; text-align: right; margin-top: 6%">
-            Chiclayo, 01 de MARZO del 2024
+            <b> Chiclayo, 01 de MARZO del 2024 </b>
         </div>
     </div>
 
