@@ -27,7 +27,7 @@ class ServiciosTransporteController extends Controller
                 $request['idDispositivo']
             ];
             $nuevoId = DB::select($newId, $params)[0];
-            File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'UPDATE ID FROM: '. $idServicioTransporte . ' TO: $nuevoId->Detalle'. PHP_EOL);
+            File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'UPDATE ID FROM: '. $idServicioTransporte . ' TO: '.$nuevoId->Detalle. PHP_EOL);
             return ['code' => 500, 'newId' => $nuevoId->Detalle, 'response' => strval("AGREGADO CORRECTAMENTE CON ID DIFERENTE")];
         } else {
             // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
