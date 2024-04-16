@@ -18,13 +18,13 @@ class ServiciosTransporteController extends Controller
             $currentDate = date("Y-m-d H:i:s");
 
             // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
-            File::append(storage_path('logs/log_tareos.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['tareos'])) . PHP_EOL);
+            File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['pasajeros'])) . PHP_EOL);
             $logParams = [
-                substr($request['idDispositivo'], 12),
-                $request["user_login"],
+                $request["mac"],
+                $request["userLogin"],
                 $request["app"],
-                "sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
-                $request["parametros"]
+                "ERROR sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
+                json_encode(['pasajeros' => $request['pasajeros']]),
             ];
 
             DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
@@ -41,6 +41,19 @@ class ServiciosTransporteController extends Controller
                 $nuevoId = DB::select($newId, $params)[0];
                 return ['code' => 500, 'newId' => $nuevoId->Detalle, 'response' => strval("AGREGADO CORRECTAMENTE CON ID DIFERENTE")];
             } else {
+                // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
+                File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['pasajeros'])) . PHP_EOL);
+
+                // INSERTAMOS LOS LOGS EN LA BASE DE DATOS
+                $logParams = [
+                    $request["mac"],
+                    $request["userLogin"],
+                    $request["app"],
+                    "sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
+                    json_encode(['pasajeros' => $request['pasajeros']]),
+                ];
+                
+                DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
                 $jsonPasajeros = json_encode(['pasajeros' => $request['pasajeros']]);
                 $queryUnidad = "INSERT INTO DataGreenMovil..trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
                 DB::unprepared($queryUnidad);
