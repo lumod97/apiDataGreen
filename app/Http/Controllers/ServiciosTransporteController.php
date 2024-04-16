@@ -62,7 +62,7 @@ class ServiciosTransporteController extends Controller
             ];
 
             DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
-            return ['code' => 500, 'response' => strval("Ha ocurrido un error al insertar el registro")];
+            return ['code' => 500, 'newId' => "nada mano", 'response' => strval("Ha ocurrido un error al insertar el registro")];
             // return ['code' => 500, 'response' => strval($th)];
         }
     }
