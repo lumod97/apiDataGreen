@@ -17,18 +17,6 @@ class ServiciosTransporteController extends Controller
             // OBTENEMOS LA FECHA Y HORA PARA LA INSERCIÓN DE LOS LOGS
             $currentDate = date("Y-m-d H:i:s");
 
-            // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
-            File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['pasajeros'])) . PHP_EOL);
-            $logParams = [
-                $request["mac"],
-                $request["userLogin"],
-                $request["app"],
-                "ERROR sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
-                json_encode(['pasajeros' => $request['pasajeros']]),
-            ];
-
-            DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
-
             $idServicioTransporte = $request['idServicioTransporte'];
             $existsServicioTransporte = DB::select("select count(*) response from trx_ServiciosTransporte where Id= '" . $idServicioTransporte . "';")[0];
             if ($existsServicioTransporte->response >= 1) {
@@ -52,7 +40,7 @@ class ServiciosTransporteController extends Controller
                     "sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
                     json_encode(['pasajeros' => $request['pasajeros']]),
                 ];
-                
+
                 DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
                 $jsonPasajeros = json_encode(['pasajeros' => $request['pasajeros']]);
                 $queryUnidad = "INSERT INTO DataGreenMovil..trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
@@ -63,7 +51,19 @@ class ServiciosTransporteController extends Controller
             }
         } catch (\Throwable $th) {
             //throw $th;
-            return ['code' => 500, 'response' => strval($th)];
+            // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
+            File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'ERROR: Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['pasajeros'])) . PHP_EOL);
+            $logParams = [
+                $request["mac"],
+                $request["userLogin"],
+                $request["app"],
+                "ERROR sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
+                json_encode(['pasajeros' => $request['pasajeros']]),
+            ];
+
+            DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
+            return ['code' => 500, 'response' => strval("Ha ocurrido un error al insertar el registro")];
+            // return ['code' => 500, 'response' => strval($th)];
         }
     }
 
