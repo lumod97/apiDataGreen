@@ -19,6 +19,7 @@ class ServiciosTransporteController extends Controller
 
         $idServicioTransporte = $request['idServicioTransporte'];
         $existsServicioTransporte = DB::select("select count(*) response from trx_ServiciosTransporte where Id= '" . $idServicioTransporte . "';")[0];
+        return $existsServicioTransporte->response;
         if ($existsServicioTransporte->response >= 1) {
             $newId = "EXECUTE DataGreenMovil..sp_Dgm_Gen_obtenerNuevoId ?,?,?";
             $params = [
@@ -46,10 +47,10 @@ class ServiciosTransporteController extends Controller
             $queryUnidad = "INSERT INTO DataGreenMovil..trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
             DB::unprepared($queryUnidad);
 
-            $result = DB::statement("EXEC DataGreenMovil..sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte ?;", [$jsonPasajeros]);
-            if ($result === 1) {
+            try {
+                $result = DB::statement("EXEC DataGreenMovil..sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte ?;", [$jsonPasajeros]);
                 return ['code' => 200, 'newId' => "nada mano", 'response' => strval("AGREGADO CORRECTAMENTE")];
-            } else {
+            } catch (\Throwable $th) {
                 //throw $th;
                 // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
                 File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'ERROR: Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['unidad']) . json_encode(['pasajeros' => $request['pasajeros']]),) . PHP_EOL);
@@ -60,7 +61,7 @@ class ServiciosTransporteController extends Controller
                     "ERROR sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
                     json_encode($request['unidad']) . json_encode(['pasajeros' => $request['pasajeros']]),
                 ];
-
+    
                 DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
                 return ['code' => 500, 'newId' => "nada mano", 'response' => strval("Ha ocurrido un error al insertar el registro")];
                 // return ['code' => 500, 'response' => strval($th)];
