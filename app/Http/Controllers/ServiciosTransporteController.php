@@ -19,7 +19,7 @@ class ServiciosTransporteController extends Controller
 
         $idServicioTransporte = $request['idServicioTransporte'];
         $existsServicioTransporte = DB::select("select count(*) response from trx_ServiciosTransporte where Id= '" . $idServicioTransporte . "';")[0];
-        File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'DEBUG: '.$existsServicioTransporte->response. PHP_EOL);
+        File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'DEBUG: '."select count(*) response from trx_ServiciosTransporte where Id= '" . $idServicioTransporte . "';".$existsServicioTransporte->response. PHP_EOL);
         if ($existsServicioTransporte->response >= 1) {
             $newId = "EXECUTE DataGreenMovil..sp_Dgm_Gen_obtenerNuevoId ?,?,?";
             $params = [
