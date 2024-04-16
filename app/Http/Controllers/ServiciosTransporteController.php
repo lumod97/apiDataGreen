@@ -47,7 +47,7 @@ class ServiciosTransporteController extends Controller
             DB::unprepared($queryUnidad);
 
             $result = DB::statement("EXEC DataGreenMovil..sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte ?;", [$jsonPasajeros]);
-            if ($result == 1) {
+            if ($result === 1) {
                 return ['code' => 200, 'newId' => "nada mano", 'response' => strval("AGREGADO CORRECTAMENTE")];
             } else {
                 //throw $th;
