@@ -11,43 +11,43 @@ class ServiciosTransporteController extends Controller
     public function getServiciosTransporte(Request $request)
     {
 
-        // SETEAMOS LA ZONA HORARIA PARA OBTENER LA FECHA Y HORA CORRECTAS
-        date_default_timezone_set("America/Lima");
-        // OBTENEMOS LA FECHA Y HORA PARA LA INSERCIÓN DE LOS LOGS
-        $currentDate = date("Y-m-d H:i:s");
-
-        // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
-        File::append(storage_path('logs/log_tareos.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['tareos'])) . PHP_EOL);
-        $logParams = [
-            substr($request['idDispositivo'], 12),
-            $request["user_login"],
-            $request["app"],
-            "sp_Dgm_Tareos_TransferirTareo_V2",
-            $request["parametros"]
-        ];
-
-        DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
-
-        $idServicioTransporte = $request['idServicioTransporte'];
-        $existsServicioTransporte = DB::select("select count(*) response from trx_ServiciosTransporte where Id= '" . $idServicioTransporte . "';")[0];
-        if ($existsServicioTransporte->response >= 1) {
-            $newId = "EXECUTE sp_Dgm_Gen_obtenerNuevoId ?,?,?";
-            $params = [
-                "trx_ServiciosTransporte",
-                $request['idEmpresa'],
-                $request['idDispositivo']
-            ];
-            $nuevoId = DB::select($newId, $params)[0];
-            return ['code' => 500, 'newId' => $nuevoId->Detalle, 'response' => strval("AGREGADO CORRECTAMENTE CON ID DIFERENTE")];
-        } else {
-            $jsonPasajeros = json_encode(['pasajeros' => $request['pasajeros']]);
-            $queryUnidad = "INSERT INTO trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
-            DB::unprepared($queryUnidad);
-
-            $result = DB::statement("EXEC sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte ?;", [$jsonPasajeros]);
-            return ['code' => 200, 'newId' => "nada mano", 'response' => strval("AGREGADO CORRECTAMENTE")];
-        }
         try {
+            // SETEAMOS LA ZONA HORARIA PARA OBTENER LA FECHA Y HORA CORRECTAS
+            date_default_timezone_set("America/Lima");
+            // OBTENEMOS LA FECHA Y HORA PARA LA INSERCIÓN DE LOS LOGS
+            $currentDate = date("Y-m-d H:i:s");
+
+            // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
+            File::append(storage_path('logs/log_tareos.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['tareos'])) . PHP_EOL);
+            $logParams = [
+                substr($request['idDispositivo'], 12),
+                $request["user_login"],
+                $request["app"],
+                "sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
+                $request["parametros"]
+            ];
+
+            DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
+
+            $idServicioTransporte = $request['idServicioTransporte'];
+            $existsServicioTransporte = DB::select("select count(*) response from trx_ServiciosTransporte where Id= '" . $idServicioTransporte . "';")[0];
+            if ($existsServicioTransporte->response >= 1) {
+                $newId = "EXECUTE DataGreenMovil..sp_Dgm_Gen_obtenerNuevoId ?,?,?";
+                $params = [
+                    "trx_ServiciosTransporte",
+                    $request['idEmpresa'],
+                    $request['idDispositivo']
+                ];
+                $nuevoId = DB::select($newId, $params)[0];
+                return ['code' => 500, 'newId' => $nuevoId->Detalle, 'response' => strval("AGREGADO CORRECTAMENTE CON ID DIFERENTE")];
+            } else {
+                $jsonPasajeros = json_encode(['pasajeros' => $request['pasajeros']]);
+                $queryUnidad = "INSERT INTO DataGreenMovil..trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
+                DB::unprepared($queryUnidad);
+
+                $result = DB::statement("EXEC DataGreenMovil..sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte ?;", [$jsonPasajeros]);
+                return ['code' => 200, 'newId' => "nada mano", 'response' => strval("AGREGADO CORRECTAMENTE")];
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return ['code' => 500, 'response' => strval($th)];
