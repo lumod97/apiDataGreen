@@ -220,7 +220,7 @@ class PdfController extends Controller
                             }
 
                             // $save_file_route = str_replace('#', trim($i . $data[$i]->codigo_general), $output);
-                            $save_file_route = str_replace('#', trim($i . $data[$i]['codigo_general']), $output);
+                            $save_file_route = str_replace('#', trim($i . $data[$i]->codigo_general), $output);
 
                             $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route));
 
