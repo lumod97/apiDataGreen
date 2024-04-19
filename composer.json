@@ -14,6 +14,8 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "mikehaertl/php-pdftk": "^0.13.1",
+        "mpdf/mpdf": "^8.2",
+        "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
         "spatie/pdf-to-image": "^2.3",
         "tecnickcom/tc-lib-barcode": "^2.2",

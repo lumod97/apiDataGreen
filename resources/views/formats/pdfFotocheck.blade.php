@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Códigos de Barras</title>
@@ -21,8 +21,8 @@
         }
 
         @font-face {
-            font-family: 'Monserrat';
-            src: 'fonts\\Montserrat.ttf';
+            font-family: 'Montss';
+            src: url('{{ storage_path('fonts/example.ttf') }}') format('truetype');
         }
 
 
@@ -99,6 +99,10 @@
         .barra {
             font-family: 'Arial Narrow';
         }
+
+        span{
+            font-family: 'Montss';
+        }
     </style>
 </head>
 
@@ -107,6 +111,7 @@
     <img src="pdf_formats/logosj.png" class="img-logo" alt="">
     <img src="pdf_formats/palta.png" class="img-palta" alt="">
     <img src="pdf_formats/uva.png" class="img-uva" alt="">
+    {{-- <span> HOLA SOY FUENTE ALTERNA </span> --}}
     {{-- {{$barra}} --}}
     {{-- <span class="number"> 946027276 </span> --}}
     {{-- {{url('pdf_formats/logosj.png')}} --}}

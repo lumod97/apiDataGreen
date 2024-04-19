@@ -52,6 +52,7 @@ Route::group(['prefix' => 'sistemas'], function () {
 Route::post('get_pdf', 'App\Http\Controllers\PdfController@generatePdf');
 Route::get('get_pdf_barras', 'App\Http\Controllers\CodigoBarrasController@generarPagina');
 Route::post('get_pdf_barras_cu', 'App\Http\Controllers\CodigoBarrasController@generarBarras');
+Route::get('get_pdf_test', 'App\Http\Controllers\CodigoBarrasController@generarBarrasTest');
 
 Route::group(['prefix' => 'configuracion'], function () {
     Route::post('obtener_data_inicial', 'App\Http\Controllers\ConfigController@obtenerDataInicial');

@@ -19,6 +19,7 @@ class PdfController extends Controller
             if ($request['template'] === 'FORMATO_DE_VACACIONES') {
                 $query = "exec Datagreen..sp_obtenerVacacionesParaFormatoPDF 'vista_normal', '***', '', '', '" . json_encode($request['movimientos']) . "'";
                 $data = DB::select($query);
+                // return $data;
             } elseif ($request['template'] === 'FORMATO_COMPENSACION_HORAS_EXTRA') {
                 $query = "exec Datagreen..sp_obtenerCompensacionHorasExtraParaFormatoPDF 'vista_normal', '***', '', '', '" . json_encode($request['movimientos']) . "'";
                 $data = DB::select($query);
@@ -100,7 +101,7 @@ class PdfController extends Controller
                     $request['periodoDesde'],
                     $request['semanaDesde'] ? $request['semanaDesde'] : '',
                     $request['periodoHasta'],
-                    $request['semanaHasta'] ? $request['semanaHasta'] : '',
+                    $request['semanaHasta'] ? $request['semanaHasta'] : ''
                 ];
                 $dataBoletas = DB::select("exec DataGreen..sp_getDataDiasBoleta ?, ?, ?, ?, ?, ?, ?, ?, ?, ?", $params);
                 // return  'holi';
@@ -162,19 +163,22 @@ class PdfController extends Controller
                         }
                     }
                     // SACAMOS LOS DIAS ENTRE LAS FECHAS INGRESADAS
-
-                    $dias = json_decode($params['dias']);
-                    if ($dias !== null) {
-                        for ($i = 0; $i < count(json_decode($params['dias'])); $i++) {
-                            $params['vdia' . ($i + 1)] = json_decode($params['dias'])[$i]->vdia;
-                            // echo $montosConceptos[$j]->descripcion.PHP_EOL;
+                    
+                    if(isset($params['dias'])){
+                        $dias = json_decode($params['dias']);
+                        if ($dias !== null) {
+                            for ($i = 0; $i < count(json_decode($params['dias'])); $i++) {
+                                $params['vdia' . ($i + 1)] = json_decode($params['dias'])[$i]->vdia;
+                                // echo $montosConceptos[$j]->descripcion.PHP_EOL;
+                            }
                         }
                     }
-
+                    
                     // CALCULAMOS NETO A PAGAR
                     $netoPagar = $params['ingresosTotal'] - $params['retencionesTotal'];
                     $params['netoPagar'] = number_format($netoPagar, 2);
                     // return $params;
+                    return $params;
 
                     // return $dataBoletas[0]->codigo_general;
                     $pdf = new Pdf($template_file_route);
@@ -194,7 +198,7 @@ class PdfController extends Controller
                 return response()->json($data)->header('Content-Type', 'application/json; charset=UTF-8');
             } else {
                 if (isset($data[0]->message) && $data[0]->message == 'No contiene registros') {
-                    return 'El trabajador no cuenta con movimientos de vacaciones.';
+                    return 'El trabajador no cuenta con movimientos.';
                 }
 
                 $template_file_route = trim('pdf_formats\\' . $request['template'] . '.pdf');
@@ -246,7 +250,7 @@ class PdfController extends Controller
                         // return $data[0]->codigo_general;
                         $pdf = new Pdf($template_file_route);
                         // $save_file_route = str_replace('#', trim($data[0]->codigo_general.$params['vdia1'].'_'.$params['vdia15']), $output);
-                        $save_file_route = str_replace('#', trim($data[0]['codigo_general']), $output);
+                        $save_file_route = str_replace('#', trim($data[0]->codigo_general), $output);
                         $route = '\\' . $save_file_route;
                         $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route));
                     }
