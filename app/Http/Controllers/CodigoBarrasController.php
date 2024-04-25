@@ -147,16 +147,16 @@ class CodigoBarrasController extends Controller
                 array_push($images, $imagePath);
 
                 // Crea una instancia de Pdf
-                // $pdf = new PdfToImg($pdfPath);
+                $pdf = new PdfToImg($pdfPath);
 
-                // // Ajustamos la resolución de la imagen a generar 
-                // $pdf->setResolution(1080);
+                // Ajustamos la resolución de la imagen a generar 
+                $pdf->setResolution(1080);
 
-                // // Convierte la primera página del PDF en una imagen PNG
-                // $pdf->setPage(1)->saveImage($imagePath);
+                // Convierte la primera página del PDF en una imagen PNG
+                $pdf->setPage(1)->saveImage($imagePath);
 
-                // // BORRAMOS EL PDF PARA LIBERAR RECURSOS EN DISCO
-                // unlink($pdfPath);
+                // BORRAMOS EL PDF PARA LIBERAR RECURSOS EN DISCO
+                unlink($pdfPath);
                 if ($trabajadorArray['codigo_barras'] != '') {
                     unlink(public_path($trabajadorArray['codigo_barras']));
                 }
