@@ -51,7 +51,8 @@ class CodigoBarrasController extends Controller
         $images = [];
         // DEFINIMOS UN ARRAY CON LOS ID DE CADA TRABAJADOR
         $codigos = [
-            ["codigo" => "72450801", "encriptado" => "2316805075"],
+            // ["codigo" => "72450801", "encriptado" => "2316805075"],
+            ["codigo" => "47333583", "encriptado" => "6763171566"],
             // ["codigo" => "E3217", "encriptado" => "0238042766"],
             // ["codigo" => "46416264", "encriptado" => "6454361635"],
             // ["codigo" => "44363337", "encriptado" => "1747063735"],
@@ -268,7 +269,9 @@ class CodigoBarrasController extends Controller
                 }
                 // Crea un objeto Imagick
                 $imagick = new ImagicK();
-                $imagick->setOption('temporary-path', $tempFolder);
+                // Establecer la carpeta temporal de Ghostscript
+                $imagick->setOption('gs:tmpdir', $tempFolder);
+
 
                 $imagick->setResolution(300, 300);
 
