@@ -104,7 +104,7 @@
             bottom: 5mm;
             left: 9mm;
             right: 9mm;
-            font-size: 9.8px;
+            font-size: 9.5px;
             line-height: 7px;
             text-align: center;
         }
@@ -120,7 +120,7 @@
             top: 51mm;
             left: 4mm;
             right: 4mm;
-            font-size: 14px;
+            font-size: 12px;
             text-align: center;
         }
 
@@ -141,11 +141,11 @@
             0.7 DESDE toP
             0.5 DESDE LEFT Y RIGHT */
             color: #00A152;
-            top: 7mm;
+            top: 5mm;
             left: 6mm;
             right: 6mm;
             /* EL TAMAÑO DE FUENTE AUN NO LO TOMO POR PUNTOS */
-            font-size: 8px;
+            font-size: 7px;
             line-height: 7.5px;
             text-align: center;
         }
