@@ -12,6 +12,8 @@ use Imagick;
 use TCPDF;
 
 use Spatie\PdfToImage\Pdf as PdfToImg;
+use ZipArchive;
+
 use Illuminate\Support\Facades\File;
 
 use Illuminate\Support\Facades\SnappyPdf as SPDF;
@@ -142,6 +144,7 @@ class CodigoBarrasController extends Controller
 
                 // Ruta donde deseas guardar la imagen PNG resultante
                 $imagePath = public_path('pdf_formats\\nuevos\\f_' . $trabajador->codigo_general . '_' . $value . '.png');
+                array_push($images, $imagePath);
 
                 // Crea una instancia de Pdf
                 $pdf = new PdfToImg($pdfPath);
@@ -159,8 +162,20 @@ class CodigoBarrasController extends Controller
                 }
             }
         }
-        // CORTAMOS PARA DEBUG
-        return "todo fino mi king, pdf generado por lado";
+        $zip = new ZipArchive();
+        $zipFileName = 'imagenes_generadas.zip';
+        if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
+            return response()->json(['message' => 'No se pudo crear el archivo ZIP'], 500);
+        }
+        // Agregar las imágenes al archivo ZIP
+        foreach ($images as $imagePath) {
+            $imageName = basename($imagePath);
+            $zip->addFile($imagePath, $imageName);
+        }
+        // Cerrar el archivo ZIP
+        $zip->close();
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+
     }
 
     public function generarBarras(Request $request)
