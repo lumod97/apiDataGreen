@@ -264,33 +264,41 @@ class CodigoBarrasController extends Controller
                 $tempFolder = public_path('/temp');
 
                 // Verifica si la carpeta temporal existe, si no, créala
-                if (!file_exists($tempFolder)) {
-                    mkdir($tempFolder, 0777, true); // 0777 otorga permisos de lectura, escritura y ejecución
-                }
-                // Crea un objeto Imagick
-                $imagick = new ImagicK();
-                // Establecer la carpeta temporal de Ghostscript
-                $imagick->setOption('gs:tmpdir', $tempFolder);
+                // if (!file_exists($tempFolder)) {
+                //     mkdir($tempFolder, 0777, true); // 0777 otorga permisos de lectura, escritura y ejecución
+                // }
 
+                // Crea una instancia de Pdf
+                $pdf = new PdfToImg(public_path($save_file_route));
 
-                $imagick->setResolution(300, 300);
-
-                $imagick->readImage($save_file_route);
-
-                $imagick->setImageFormat('png');
-
+                // Ajustamos la resolución de la imagen a generar 
+                $pdf->setResolution(300);
+                
+                // Convierte la primera página del PDF en una imagen PNG
                 $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
-                if (!file_exists($outputDir)) {
-                    mkdir($outputDir, 0755, true);
-                }
-                // Genera un nombre de archivo para la imagen JPG
-                $outputFileName = public_path($outputDir);
+                $pdf->setPage(1)->saveImage(public_path($outputDir));
 
-                // Guarda la imagen JPG
-                $imagick->writeImage($outputFileName);
 
-                // Destruye el objeto Imagick
-                $imagick->destroy();
+                // // Crea un objeto Imagick
+                // $imagick = new ImagicK();
+
+                // $imagick->setResolution(300, 300);
+
+                // $imagick->readImage($save_file_route);
+
+                // $imagick->setImageFormat('png');
+
+                // if (!file_exists($outputDir)) {
+                //     mkdir($outputDir, 0755, true);
+                // }
+                // // Genera un nombre de archivo para la imagen JPG
+                // $outputFileName = public_path($outputDir);
+
+                // // Guarda la imagen JPG
+                // $imagick->writeImage($outputFileName);
+
+                // // Destruye el objeto Imagick
+                // $imagick->destroy();
 
                 unlink($save_file_route_prev);
                 unlink('raw\\back.pdf');
