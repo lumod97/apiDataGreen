@@ -175,7 +175,6 @@ class CodigoBarrasController extends Controller
         // Cerrar el archivo ZIP
         $zip->close();
         return response()->download($zipFileName)->deleteFileAfterSend(true);
-
     }
 
     public function generarBarras(Request $request)
@@ -252,8 +251,16 @@ class CodigoBarrasController extends Controller
                 $command = "pdftk {$save_file_route_prev} background raw\\back.pdf output {$save_file_route} compress";
                 exec($command, $output, $return_var);
 
+                // Ruta a la carpeta donde deseas almacenar los archivos temporales dentro de tu aplicación web
+                $tempFolder = public_path('/temp');
+
+                // Verifica si la carpeta temporal existe, si no, créala
+                if (!file_exists($tempFolder)) {
+                    mkdir($tempFolder, 0777, true); // 0777 otorga permisos de lectura, escritura y ejecución
+                }
                 // Crea un objeto Imagick
                 $imagick = new ImagicK();
+                $imagick->setOption('temporary-path', $tempFolder);
 
                 $imagick->setResolution(300, 300);
 
