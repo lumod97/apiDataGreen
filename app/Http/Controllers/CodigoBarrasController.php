@@ -82,7 +82,7 @@ class CodigoBarrasController extends Controller
         $data = DB::select("exec Datagreen..sp_obtener_data_fotocheck ?, ?, ?", $params);
 
         // SETEAMOS EL TIEMPO LÍMITE PARA LA EJECUÓN A 20S PARA DEBUG, EN PRODUCCIÓN CAMBIAMOS POR LA GENERACIÓN EN MASA
-        set_time_limit(60); // Establece el tiempo máximo de ejecución a 120 segundos
+        set_time_limit(200); // Establece el tiempo máximo de ejecución a 200 segundos
         // DEFINIMOS UN ARRAY CON 2 VALORES, ESTOS VALORES CONTENDRÁN LOS LADOS DEL FOTOCHECK PARA GENERARLO DINÁMICAMENTE
         $caras = [
             "Front",
@@ -95,7 +95,6 @@ class CodigoBarrasController extends Controller
                 "nombre" => $trabajador->nombres,
                 "codigo" => $trabajador->codigo_general,
                 "dni" => $trabajador->dni,
-                "dniws" => $trabajador->dniws,
                 "cargo" => $trabajador->cargo,
                 "foto" => $trabajador->foto,
                 "codigo_barras" => ''
@@ -135,14 +134,6 @@ class CodigoBarrasController extends Controller
                 }
                 // RENDERIZAMOS LA VISTA FRONTAL
                 // INSTANCIAMOS UN PDF BASANDONOS EN DOMPDF Y CARGAMOS LA VISTA EN BLADE
-                // Si la instancia de PDF no está creada, crearla
-                // if (!$pdfContent) {
-                //     $pdfContent = PDF::loadView('formats.pdfFotocheckEMP' . $value, $trabajadorArray);
-                // } else {
-                //     // Si ya está creada, cargar la vista en la instancia existente
-                //     $pdfContent->clear();
-                //     $pdfContent->loadView('formats.pdfFotocheckEMP' . $value, $trabajadorArray);
-                // }
                 $pdfContent = PDF::loadView('formats.pdfFotocheckEMP' . $value, $trabajadorArray);
                 // PONEMOS LA RUTA DEL PDF, OSEA, DONDE LO VAMOS A GUARDAR
                 $pdfPath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.pdf';
@@ -150,7 +141,6 @@ class CodigoBarrasController extends Controller
                 $pdfContent->save($pdfPath);
 
                 // AHORA CONVERTIREMOS EL PDF A PNG COMO LO SOLICITA ZEBRA
-
                 // Ruta donde deseas guardar la imagen PNG resultante
                 $imagePath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.png';
                 array_push($images, $imagePath);
@@ -209,9 +199,6 @@ class CodigoBarrasController extends Controller
             for ($i = 0; $i < count($data); $i++) {
                 $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
 
-
-                // if (!file_exists($outputDir)) {
-
                 $params = [];
                 foreach ($data[$i] as $key => $value) {
                     $code = $data[$i]->codigo_general;
@@ -263,11 +250,6 @@ class CodigoBarrasController extends Controller
                 // Ruta a la carpeta donde deseas almacenar los archivos temporales dentro de tu aplicación web
                 $tempFolder = public_path('/temp');
 
-                // Verifica si la carpeta temporal existe, si no, créala
-                // if (!file_exists($tempFolder)) {
-                //     mkdir($tempFolder, 0777, true); // 0777 otorga permisos de lectura, escritura y ejecución
-                // }
-
                 // Crea una instancia de Pdf
                 $pdf = new PdfToImg(public_path($save_file_route));
 
@@ -278,44 +260,22 @@ class CodigoBarrasController extends Controller
                 $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
                 $pdf->setPage(1)->saveImage(public_path($outputDir));
 
-
-                // // Crea un objeto Imagick
-                // $imagick = new ImagicK();
-
-                // $imagick->setResolution(300, 300);
-
-                // $imagick->readImage($save_file_route);
-
-                // $imagick->setImageFormat('png');
-
-                // if (!file_exists($outputDir)) {
-                //     mkdir($outputDir, 0755, true);
-                // }
-                // // Genera un nombre de archivo para la imagen JPG
-                // $outputFileName = public_path($outputDir);
-
-                // // Guarda la imagen JPG
-                // $imagick->writeImage($outputFileName);
-
-                // // Destruye el objeto Imagick
-                // $imagick->destroy();
-
+                $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
+                
+                $codigos[$i] = $data[$i]->codigo_general;
+                // } else {
+                    //     $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
+                    
+                    //     $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
+                    //     $codigos[$i] = $data[$i]->codigo_general;
+                    // }
                 unlink($save_file_route_prev);
                 unlink('raw\\back.pdf');
                 unlink($save_file_route);
                 unlink($imageFilePath);
-                // unlink(public_path($outputDir));
+                unlink(public_path($outputDir));
                 // unlink($outputFileName);
-                $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
-
-                $codigos[$i] = $data[$i]->codigo_general;
-                // } else {
-                //     $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
-
-                //     $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
-                //     $codigos[$i] = $data[$i]->codigo_general;
-                // }
-            }
+                }
 
 
             $datos = [
@@ -329,7 +289,7 @@ class CodigoBarrasController extends Controller
             $dompdf->render();
 
             $pdfContentGenerated = $dompdf->output();
-            $outputFolder = 'raw\\generados.pdf';
+            $outputFolder = 'raw\\fotochecksGenerados.pdf';
 
             file_put_contents($outputFolder, $pdfContentGenerated);
             // return $outputFolder;
