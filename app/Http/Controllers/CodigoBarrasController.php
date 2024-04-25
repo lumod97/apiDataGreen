@@ -166,7 +166,7 @@ class CodigoBarrasController extends Controller
                 // BORRAMOS EL PDF PARA LIBERAR RECURSOS EN DISCO
                 unlink($pdfPath);
                 if ($trabajadorArray['codigo_barras'] != '') {
-                    unlink(public_path($trabajadorArray['codigo_barras']));
+                    unlink($trabajadorArray['codigo_barras']);
                 }
             }
         }
