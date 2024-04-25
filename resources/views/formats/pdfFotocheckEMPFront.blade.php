@@ -134,7 +134,7 @@
     <!-- Imagen centrada a 4cm desde arriba -->
     {{-- EN ESTE CASO SE ESTÁN PONIENDO VALORES EN CRUDO AUN PARA LAS RUTAS DE LAS IMÁGENES --}}
     {{-- <img src="data:image/png;base64,{{base64_encode(file_get_contents($foto))}}" alt="Imagen Centrada" class="image-center"> --}}
-    <img src="data:image/png;base64,{{base64_encode(file_get_contents($foto))}}" alt="Imagen Centrada" class="image-center">
+    <img src="data:image/png;base64,{{base64_encode(file_get_contents('pdf_formats\\images\\fotos_personal\\'.str_replace(' ', '', $dni).'.png'))}}" alt="Imagen Centrada" class="image-center">
     {{-- logosj --}}
     <img src="pdf_formats/images/logosj.png" alt="Imagen Completa" class="image-logo">
     <!-- Imagen que cubre toda la página -->
