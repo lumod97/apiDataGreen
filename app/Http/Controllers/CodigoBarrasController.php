@@ -173,6 +173,10 @@ class CodigoBarrasController extends Controller
         }
         // Cerrar el archivo ZIP
         $zip->close();
+        // Agregar las imágenes al archivo ZIP
+        foreach ($images as $imagePath) {
+            unlink($imagePath);
+        }
         return response()->download($zipFileName)->deleteFileAfterSend(true);
     }
 
