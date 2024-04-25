@@ -102,6 +102,14 @@ class CodigoBarrasController extends Controller
             // return $trabajador->foto));
             // $pdfContent = null;
             //  INICIAMOS PROCESO DE GENERACIÓN DE FOTOCHECKS POR CADA TRABAJADOR
+            // Ruta a la carpeta donde deseas almacenar los archivos de fotochecks
+            $fotochecksFolder = public_path('/fotochecks');
+
+            // Verifica si la carpeta temporal existe, si no, créala
+            if (!file_exists($fotochecksFolder)) {
+                mkdir($fotochecksFolder, 0777, true); // 0777 otorga permisos de lectura, escritura y ejecución
+            }
+
             foreach ($caras as $key => $value) {
                 $code = $trabajador->codigo_general;
                 if (isset($trabajador->encriptado) && $value == 'Back') {
@@ -115,7 +123,7 @@ class CodigoBarrasController extends Controller
                     $barcodePNG = $barcodeObject->getPngData();
 
                     // Ruta temporal para guardar la imagen PNG
-                    $imageFilePath = 'pdf_formats\\nuevos\\barcode_' . $code . '.png';
+                    $imageFilePath = $fotochecksFolder.'\\barcode_' . $code . '.png';
 
                     // Guarda la imagen PNG del código de barras en un archivo temporal
                     file_put_contents($imageFilePath, $barcodePNG);
@@ -136,14 +144,14 @@ class CodigoBarrasController extends Controller
                 // }
                 $pdfContent = PDF::loadView('formats.pdfFotocheckEMP' . $value, $trabajadorArray);
                 // PONEMOS LA RUTA DEL PDF, OSEA, DONDE LO VAMOS A GUARDAR
-                $pdfPath = public_path('pdf_formats\\nuevos\\f_' . $trabajador->codigo_general . '_' . $value . '.pdf');
+                $pdfPath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.pdf');
                 // GUARDAMOS EL ARCHIVO
                 $pdfContent->save($pdfPath);
 
                 // AHORA CONVERTIREMOS EL PDF A PNG COMO LO SOLICITA ZEBRA
 
                 // Ruta donde deseas guardar la imagen PNG resultante
-                $imagePath = public_path('pdf_formats\\nuevos\\f_' . $trabajador->codigo_general . '_' . $value . '.png');
+                $imagePath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.png');
                 array_push($images, $imagePath);
 
                 // Crea una instancia de Pdf
