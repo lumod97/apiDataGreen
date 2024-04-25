@@ -1,0 +1,49 @@
+/* Estilo de página A4 */
+@page {
+    size: 53.975mm 85.725mm;
+    margin: 0px;
+    padding: 0px;
+    position: relative !important;
+    /* Ajusta el margen si es necesario */
+}
+
+body {
+    position: relative !important;
+    background: #ffffff;
+    background-size: 100% 100%;
+    /* Ajusta para que la imagen de fondo se ajuste al tamaño del body */
+    background-repeat: no-repeat;
+    /* Evita que la imagen de fondo se repita */
+    /* Ajusta el valor según tus necesidades */
+    width: 53.975mm;
+    height: 85.725mm;
+}
+
+.container {
+    position: relative !important;
+    background: #ffffff;
+    background-size: 100% 100%;
+    /* Ajusta para que la imagen de fondo se ajuste al tamaño del body */
+    background-repeat: no-repeat;
+    /* Evita que la imagen de fondo se repita */
+    /* Ajusta el valor según tus necesidades */
+    width: 53.975mm;
+    height: 85.725mm;
+}
+
+.img-palta {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    width: 12mm;
+    height: 12mm;
+    z-index: 1;
+}
+
+.img_frontal {
+    position: fixed !important;
+    width: 53.975mm;
+    height: 85.725mm;
+    z-index: 0;
+}

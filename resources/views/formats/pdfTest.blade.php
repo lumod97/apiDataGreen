@@ -85,17 +85,6 @@
         .divImagenes {
             width: 100% !important;
         }
-
-        /* .spanDNI {
-            position: absolute;
-            font-family: 'Montserrat';
-            font-size: 0.5cm;
-            border: 2px solid black;
-            z-index: 2;
-            /* Asegúrate de que el z-index sea mayor que el de la imagen */
-            bottom: cm;
-            /* Ajusta la altura desde la parte inferior del contenedor */
-        } */
     </style>
 </head>
 

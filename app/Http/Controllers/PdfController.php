@@ -13,17 +13,13 @@ class PdfController extends Controller
     public function generatePdf(Request $request)
     {
         try {
-            // return $request;
-            // return $request['movimientos'];
             $filesString = "";
             if ($request['template'] === 'FORMATO_DE_VACACIONES') {
                 $query = "exec Datagreen..sp_obtenerVacacionesParaFormatoPDF 'vista_normal', '***', '', '', '" . json_encode($request['movimientos']) . "'";
                 $data = DB::select($query);
-                // return $data;
             } elseif ($request['template'] === 'FORMATO_COMPENSACION_HORAS_EXTRA') {
                 $query = "exec Datagreen..sp_obtenerCompensacionHorasExtraParaFormatoPDF 'vista_normal', '***', '', '', '" . json_encode($request['movimientos']) . "'";
                 $data = DB::select($query);
-                // return $data;
             } elseif ($request['template'] === 'plantilla_fotochecks_EDITABLE') {
                 $data = [
                     [
@@ -47,8 +43,6 @@ class PdfController extends Controller
                         'numero' => '942084516'
                     ]
                 ];
-                // return $data[0]['codigo_general'];
-                // return $data;
             } elseif ($request['template'] === 'FORMATO_DE_CERTIFICADO_DE_TRABAJO') {
 
                 $datos = [
@@ -62,7 +56,6 @@ class PdfController extends Controller
                     'mesH' => 'MARZO',
                     'anioH' => '2024',
                 ];
-
                 // Renderizar la vista a HTML
                 $html = view('formats.pdfCertificadoTrabajo', $datos)->render();
                 $options = new Options();
@@ -80,16 +73,7 @@ class PdfController extends Controller
                 $dompdf->setOptions($options);
                 $dompdf->setPaper('A4', 'landscape');
 
-
-                // Cargar el HTML en Dompdf
-                // $dompdf->setOptions($options);
-
-                // Renderizar el PDF
-
-                // Descargar el PDF generado
                 return $dompdf->stream('ejemplo.pdf');
-                // Crear una instancia de Dompdf con las opciones configuradas
-
             } elseif ($request['template'] === 'FORMATO_BOLETAS') {
                 $params = [
                     $request['vista'],
@@ -103,10 +87,15 @@ class PdfController extends Controller
                     $request['periodoHasta'],
                     $request['semanaHasta'] ? $request['semanaHasta'] : ''
                 ];
-                $dataBoletas = DB::select("exec DataGreen..sp_getDataDiasBoleta ?, ?, ?, ?, ?, ?, ?, ?, ?, ?", $params);
+                $semanaDesde = $request['semanaDesde'] ? $request['semanaDesde'] : '';
+                $semanaHasta = $request['semanaHasta'] ? $request['semanaHasta'] : '';
+                $query = "exec DataGreen..sp_getDataDiasBoleta '".$request['vista']."', '".json_encode($request['objCodigos'])."', '".$request['idPlanilla']."', 'N', '".$request['codigoDesde']."', '".$request['codigoHasta']."', '".$request['periodoDesde']."', '".$semanaDesde."', '".$request['periodoHasta']."', '".$semanaHasta."'";
+
+                // return $query;
+                $dataBoletas = DB::select($query, $params);
                 // return  'holi';
                 // return $dataBoletas;
-                
+
                 // return $params;
                 if (count($dataBoletas) === 0) {
                     return "No existen registros para este trabajador.";
@@ -120,6 +109,7 @@ class PdfController extends Controller
                 $route = 'mixPdf.pdf';
                 // SI SON VARIOS, QUE LOS AGRUPE, SI NO, QUE DEVUELVA LA RUTA INDIVIDUAL
                 // DATOS PARA DIAS
+                // return count($dataBoletas);
                 if (count($dataBoletas) > 1) {
                     for ($i = 0; $i < count($dataBoletas); $i++) {
                         $pdf = new Pdf($template_file_route);
@@ -149,11 +139,11 @@ class PdfController extends Controller
                             $total = 0;
                             for ($j = 0; $j < count($montosConceptos); $j++) {
                                 $params[$key . 'Descripcion.' . $j] = $montosConceptos[$j]->descripcion;
-                                $params[$key . 'Valor.' . $j] = str_replace(',','',number_format($montosConceptos[$j]->valor, 2));
+                                $params[$key . 'Valor.' . $j] = str_replace(',', '', number_format($montosConceptos[$j]->valor, 2));
                                 // echo number_format($montosConceptos[$j]->valor, 2).' ';
-                                $total += str_replace(',','',number_format($montosConceptos[$j]->valor, 2));
+                                $total += str_replace(',', '', number_format($montosConceptos[$j]->valor, 2));
                             }
-                            $params[$key . 'Total'] = str_replace(',','',number_format($total, 2));
+                            $params[$key . 'Total'] = str_replace(',', '', number_format($total, 2));
                         } else {
                             if ($value == '.00') {
                                 $params[$key] = ' - ';
@@ -163,8 +153,10 @@ class PdfController extends Controller
                         }
                     }
                     // SACAMOS LOS DIAS ENTRE LAS FECHAS INGRESADAS
-                    
-                    if(isset($params['dias'])){
+
+                    // return $params;
+
+                    if (isset($params['dias'])) {
                         $dias = json_decode($params['dias']);
                         if ($dias !== null) {
                             for ($i = 0; $i < count(json_decode($params['dias'])); $i++) {
@@ -173,16 +165,16 @@ class PdfController extends Controller
                             }
                         }
                     }
-                    
+
                     // CALCULAMOS NETO A PAGAR
                     $netoPagar = $params['ingresosTotal'] - $params['retencionesTotal'];
                     $params['netoPagar'] = number_format($netoPagar, 2);
                     // return $params;
-                    return $params;
+                    // return $params;
 
                     // return $dataBoletas[0]->codigo_general;
                     $pdf = new Pdf($template_file_route);
-                    $save_file_route = str_replace('#', str_replace(' ', '', trim($dataBoletas[0]->codigo_general.$request['fecha_desde'].'_'.$request['fecha_hasta'])), $output);
+                    $save_file_route = str_replace('#', str_replace(' ', '', trim($dataBoletas[0]->codigo_general)), $output);
                     $route = '\\' . $save_file_route;
                     $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route));
                 }
@@ -218,15 +210,11 @@ class PdfController extends Controller
                             foreach ($data[$i] as $key => $value) {
                                 $params[$key] = $value;
                             }
-
-                            // $save_file_route = str_replace('#', trim($i . $data[$i]->codigo_general), $output);
                             $save_file_route = str_replace('#', trim($i . $data[$i]->codigo_general), $output);
 
                             $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route));
 
                             $filesString .=  public_path($save_file_route) . ' ';
-                            // return $filesString;
-
                             $route = '\\raw\\mixPdf.pdf';
                         }
 
@@ -246,10 +234,7 @@ class PdfController extends Controller
                                 }
                             }
                         }
-                        // return $params;
-                        // return $data[0]->codigo_general;
                         $pdf = new Pdf($template_file_route);
-                        // $save_file_route = str_replace('#', trim($data[0]->codigo_general.$params['vdia1'].'_'.$params['vdia15']), $output);
                         $save_file_route = str_replace('#', trim($data[0]->codigo_general), $output);
                         $route = '\\' . $save_file_route;
                         $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route));
@@ -257,8 +242,6 @@ class PdfController extends Controller
                     if ($result == false) {
                         return response(['error' => 'No se ha generado el pdf', 'code' => 500]);
                     }
-                    // echo $command;
-                    // return $command;
                 }
 
                 return  $url . $route;
