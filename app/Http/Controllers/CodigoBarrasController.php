@@ -144,14 +144,14 @@ class CodigoBarrasController extends Controller
                 // }
                 $pdfContent = PDF::loadView('formats.pdfFotocheckEMP' . $value, $trabajadorArray);
                 // PONEMOS LA RUTA DEL PDF, OSEA, DONDE LO VAMOS A GUARDAR
-                $pdfPath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.pdf');
+                $pdfPath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.pdf';
                 // GUARDAMOS EL ARCHIVO
                 $pdfContent->save($pdfPath);
 
                 // AHORA CONVERTIREMOS EL PDF A PNG COMO LO SOLICITA ZEBRA
 
                 // Ruta donde deseas guardar la imagen PNG resultante
-                $imagePath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.png');
+                $imagePath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.png';
                 array_push($images, $imagePath);
 
                 // Crea una instancia de Pdf
