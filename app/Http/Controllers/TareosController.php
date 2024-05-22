@@ -21,14 +21,14 @@ class TareosController extends Controller
             File::append(storage_path('logs/log_tareos.txt'), PHP_EOL.'Momento: '.$currentDate.' ----- parametros: '.stripslashes(json_encode($request['tareos'])) . PHP_EOL);
 
             // INSERTAMOS LOS LOGS EN LA BASE DE DATOS
-            $logParams = [
-                $request["mac"],
-                $request["user_login"],
-                $request["app"],
-                "sp_Dgm_Tareos_TransferirTareo_V2",
-                $request["parametros"]
-            ];
-            DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
+            // $logParams = [
+            //     $request["mac"],
+            //     $request["user_login"],
+            //     $request["app"],
+            //     "sp_Dgm_Tareos_TransferirTareo_V2",
+            //     $request["parametros"]
+            // ];
+            // DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
      
             // ENVIAMOS LOS TAREOS PARA SU INSERCIÓN
             $params = [
@@ -62,14 +62,14 @@ class TareosController extends Controller
             File::append(storage_path('logs/log_tareos.txt'), PHP_EOL.'Momento: '.$currentDate.' ----- parametros: '.stripslashes(json_encode($request['tareos'])) . PHP_EOL);
 
             // GUARDAMOS EL LOG EN LA BASE DE DATOS
-            $logParams = [
-                $request["mac"],
-                $request["user_login"],
-                $request["app"],
-                "ERROR sp_Dgm_Tareos_TransferirTareo_V3",
-                $request["parametros"]
-            ];
-            DB::statement("SET NOCOUNT ON; insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
+            // $logParams = [
+            //     $request["mac"],
+            //     $request["user_login"],
+            //     $request["app"],
+            //     "ERROR sp_Dgm_Tareos_TransferirTareo_V3",
+            //     $request["parametros"]
+            // ];
+            // DB::statement("SET NOCOUNT ON; insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
 
             // RETORNAMOS EL RESPONSE
             return ['code' => 500, 'response' => $errorText];
