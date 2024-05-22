@@ -57,8 +57,8 @@
 
         .image-barcode {
             position: absolute !important;
-            top: 26mm !important;
-            height: 14mm;
+            top: 31mm !important;
+            height: 9mm;
             width: 41mm;
             left: 6mm;
             right: 6mm;
@@ -168,7 +168,7 @@
     {{-- TEXTO QUE CONTIENE EL SLOGAN DE LA EMPRESA --}}
     <span class="text-slogan-empresa">¡Para un mañana mejor, un presente juntos!</span>
     {{-- TEXTO QUE CONTIENE EL FOOTER, DONDE SE VISUALIZA LA INFORMACIÓN DE LA LÍNEA ÉTICA DE SAN JUAN --}}
-    <span class="text-linea-etica"> Ante cualquier queja o sugerencia comunícate con la línea ética San Juan <br><br>
+    <span class="text-linea-etica"> Ante cualquier queja o sugerencia comunícate con la línea ética San Juan <br>
         <span>
             942 084 516
         </span>

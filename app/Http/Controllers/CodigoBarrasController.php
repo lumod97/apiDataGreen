@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EmailSJ;
 use Barryvdh\DomPDF\Facade\Pdf;
 use mikehaertl\pdftk\Pdf as PDFTK;
 use Com\Tecnick\Barcode\Barcode;
@@ -15,7 +16,7 @@ use Spatie\PdfToImage\Pdf as PdfToImg;
 use ZipArchive;
 
 use Illuminate\Support\Facades\File;
-
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\SnappyPdf as SPDF;
 use Illuminate\Support\Facades\Storage;
 use Knp\Snappy\Image;
@@ -51,10 +52,11 @@ class CodigoBarrasController extends Controller
         $images = [];
         // DEFINIMOS UN ARRAY CON LOS ID DE CADA TRABAJADOR
         $codigos = [
-            ["codigo" => "72450801", "encriptado" => "2316805075"],
+            // ["codigo" => "72450801", "encriptado" => "2316805075"],
             // ["codigo" => "47333583", "encriptado" => "6763171566"],
             // ["codigo" => "E3217", "encriptado" => "0238042766"],
-            // ["codigo" => "46416264", "encriptado" => "6454361635"],
+            // ["codigo" => "D0086", "encriptado" => "6454361635"],
+            ["codigo" => "48749870", "encriptado" => "3653915375"],
             // ["codigo" => "44363337", "encriptado" => "1747063735"],
             // ["codigo" => "72172511", "encriptado" => "3938332566"],
 
@@ -68,18 +70,20 @@ class CodigoBarrasController extends Controller
         //     json_encode($request['codigos']),
         //     $request['idplanilla'],
         // ];
+
         $params = [
             'vista_pdf_emp',
             // json_encode($request['codigos']),
             // CODIFICAMOS A JSON EL ARRAY DE CÓDIGOS, YA QUE EL SP ESPERA UN JSON
             json_encode($codigos),
-            'EMP',
+            'FMG',
         ];
 
         // return json_encode($request['codigos']);
 
         // CAPTURAMOS LA DATA QUE ENVIAMOS PARA PODER GENERAR LOS FOTOCHECKS DE LOS TRABAJADORES SELECCIONADOS
         $data = DB::select("exec Datagreen..sp_obtener_data_fotocheck ?, ?, ?", $params);
+        // return $data;
 
         // SETEAMOS EL TIEMPO LÍMITE PARA LA EJECUÓN A 20S PARA DEBUG, EN PRODUCCIÓN CAMBIAMOS POR LA GENERACIÓN EN MASA
         set_time_limit(200); // Establece el tiempo máximo de ejecución a 200 segundos
@@ -123,7 +127,7 @@ class CodigoBarrasController extends Controller
                     $barcodePNG = $barcodeObject->getPngData();
 
                     // Ruta temporal para guardar la imagen PNG
-                    $imageFilePath = $fotochecksFolder.'\\barcode_' . $code . '.png';
+                    $imageFilePath = $fotochecksFolder . '\\barcode_' . $code . '.png';
 
                     // Guarda la imagen PNG del código de barras en un archivo temporal
                     file_put_contents($imageFilePath, $barcodePNG);
@@ -136,13 +140,13 @@ class CodigoBarrasController extends Controller
                 // INSTANCIAMOS UN PDF BASANDONOS EN DOMPDF Y CARGAMOS LA VISTA EN BLADE
                 $pdfContent = PDF::loadView('formats.pdfFotocheckEMP' . $value, $trabajadorArray);
                 // PONEMOS LA RUTA DEL PDF, OSEA, DONDE LO VAMOS A GUARDAR
-                $pdfPath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.pdf';
+                $pdfPath = $fotochecksFolder . '\\f_' . $trabajador->codigo_general . '_' . $value . '.pdf';
                 // GUARDAMOS EL ARCHIVO
                 $pdfContent->save($pdfPath);
 
                 // AHORA CONVERTIREMOS EL PDF A PNG COMO LO SOLICITA ZEBRA
                 // Ruta donde deseas guardar la imagen PNG resultante
-                $imagePath = $fotochecksFolder.'\\f_' . $trabajador->codigo_general . '_' . $value . '.png';
+                $imagePath = $fotochecksFolder . '\\f_' . $trabajador->codigo_general . '_' . $value . '.png';
                 array_push($images, $imagePath);
 
                 // Crea una instancia de Pdf
@@ -211,7 +215,7 @@ class CodigoBarrasController extends Controller
                         $barcode = new Barcode();
 
                         // Generar un código de barras de tipo Code 128
-                        $barcodeObject = $barcode->getBarcodeObj('C128', $value, -4, -70, 'black', array(-2, -2, -2, -2));
+                        $barcodeObject = $barcode->getBarcodeObj('C128', $value, -4, -40, 'black', array(-2, -2, -2, -2));
 
                         // Obtener la imagen PNG del código de barras
                         $barcodePNG = $barcodeObject->getPngData();
@@ -259,27 +263,27 @@ class CodigoBarrasController extends Controller
 
                 // Ajustamos la resolución de la imagen a generar 
                 $pdf->setResolution(300);
-                
+
                 // Convierte la primera página del PDF en una imagen PNG
                 $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
                 $pdf->setPage(1)->saveImage(public_path($outputDir));
 
                 $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
-                
+
                 $codigos[$i] = $data[$i]->codigo_general;
                 // } else {
-                    //     $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
-                    
-                    //     $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
-                    //     $codigos[$i] = $data[$i]->codigo_general;
-                    // }
+                //     $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
+
+                //     $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
+                //     $codigos[$i] = $data[$i]->codigo_general;
+                // }
                 unlink($save_file_route_prev);
                 unlink('raw\\back.pdf');
                 unlink($save_file_route);
                 unlink($imageFilePath);
                 unlink(public_path($outputDir));
                 // unlink($outputFileName);
-                }
+            }
 
 
             $datos = [

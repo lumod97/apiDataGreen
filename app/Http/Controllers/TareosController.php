@@ -32,14 +32,29 @@ class TareosController extends Controller
      
             // ENVIAMOS LOS TAREOS PARA SU INSERCIÓN
             $params = [
-                json_encode(['tareos' => $request['tareos']])
+                json_encode(['tareos' => $request['tareos']]),
+                $request["mac"],
+                $request["imei"]
             ];
-            $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovil..sp_Dgm_Tareos_TransferirTareo_V2 ?;", $params);
+            $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovil..sp_Dgm_Tareos_TransferirTareo_V3 ?, ?, ?;", $params);
+            // throw new Exception('SUAVE MANOOOOOOO');
+
+            // return $data;
+            
+            $response = $data[0];
+
+            // return $response;
 
             // RETORNAMOS EL RESPONSE
-            return ['code' => 200, 'response' => $data];
+            if($response->code == '500'){
+                throw new Exception($response->message);
+            }else if($response->code == '200'){
+                return ['code' => $response->code, 'response' => $data];
+            }
+
 
         } catch (\Throwable $th) {
+            // return $th;
             
             // GUARDAMOS EL ERROR Y EL LOG EN UN ARCHIVO DE TEXTO
             $errorText = strval($th);
@@ -51,13 +66,13 @@ class TareosController extends Controller
                 $request["mac"],
                 $request["user_login"],
                 $request["app"],
-                "ERROR sp_Dgm_Tareos_TransferirTareo_V2",
+                "ERROR sp_Dgm_Tareos_TransferirTareo_V3",
                 $request["parametros"]
             ];
-            DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
+            DB::statement("SET NOCOUNT ON; insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
 
             // RETORNAMOS EL RESPONSE
-            return ['code' => 500, 'response' => strval($th)];
+            return ['code' => 500, 'response' => $errorText];
         }
     }
 

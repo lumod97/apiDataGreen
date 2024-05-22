@@ -98,10 +98,12 @@
             top: 63mm;
             left: 4mm;
             right: 2mm;
+            line-height: 12px;
         }
 
         .text-nombre > span {
             font-family: MontserratBold !important;
+            line-height: 12px;
         }
 
 

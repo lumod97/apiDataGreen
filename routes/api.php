@@ -22,6 +22,11 @@ Route::post('get-servicios-transporte','App\Http\Controllers\ServiciosTransporte
 Route::post('get-asientos-restantes','App\Http\Controllers\ServiciosTransporteController@getAsientosRestantes');
 Route::post('aprobar-servicio-transporte', 'App\Http\Controllers\ServiciosTransporteController@aprobarServicioTransporte');
 
+Route::group(['prefix' => 'minigreen'], function(){
+    Route::post('registrar_actualización', 'App\Http\Controllers\MiniGreenController@registrarActualización');
+    Route::get('validar_version', 'App\Http\Controllers\MiniGreenController@validarVersion');
+    Route::get('download-file', 'App\Http\Controllers\MiniGreenController@devolverRutaActualizacion');
+});
 
 Route::group(['prefix' => 'tareos'], function () {
     Route::post('insertar_tareos', 'App\Http\Controllers\TareosController@insertarTareos');
@@ -75,6 +80,12 @@ Route::group(['prefix'=>'boletas'], function (){
 Route::group(['prefix'=>'consumidores'], function (){
     Route::post('insertar-consumidor', 'App\Http\Controllers\consumidoresController@insertConsumidor');
 });
+
+Route::group(['prefix'=>'capacitaciones'], function (){
+    Route::get('get_areas', 'App\Http\Controllers\capacitacionesController@getAreas');
+    Route::get('get_personas', 'App\Http\Controllers\capacitacionesController@getPersonas');
+});
+
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
