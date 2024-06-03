@@ -84,6 +84,9 @@ Route::group(['prefix'=>'consumidores'], function (){
 Route::group(['prefix'=>'capacitaciones'], function (){
     Route::get('get_areas', 'App\Http\Controllers\capacitacionesController@getAreas');
     Route::get('get_personas', 'App\Http\Controllers\capacitacionesController@getPersonas');
+    Route::get('get_cargos', 'App\Http\Controllers\capacitacionesController@getCargos');
+    Route::get('get_tipos_capacitacion', 'App\Http\Controllers\capacitacionesController@getTiposCapacitacion');
+    Route::get('get_capacitaciones', 'App\Http\Controllers\capacitacionesController@getCapacitaciones');
 });
 
 
