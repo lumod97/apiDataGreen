@@ -42,14 +42,22 @@ class ServiciosTransporteController extends Controller
                 json_encode($request['unidad']) . json_encode(['pasajeros' => $request['pasajeros']]),
             ];
 
-            DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
+            // DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
             $jsonPasajeros = json_encode(['pasajeros' => $request['pasajeros']]);
-            $queryUnidad = "INSERT INTO DataGreenMovil..trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
-            DB::unprepared($queryUnidad);
+            // $queryUnidad = "INSERT INTO DataGreenMovil..trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
+            // DB::unprepared($queryUnidad);
+
+            $params = [
+                $jsonPasajeros,
+                $request['unidad'],
+                $request['mac'],
+                $request['usuario']
+            ];
 
             try {
-                $result = DB::statement("EXEC DataGreenMovil..sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte ?;", [$jsonPasajeros]);
-                return ['code' => 200, 'newId' => "nada mano", 'response' => strval("AGREGADO CORRECTAMENTE")];
+                // $result = DB::statement("EXEC DataGreenMovil..sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte ?, ?;", $params);
+                $result = DB::statement("EXEC DataGreenMovil..sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte_Test ?, ?, ?, ?;", $params);
+                return ['code' => 200, 'newId' => "no hay nuevo id", 'response' => strval("AGREGADO CORRECTAMENTE")];
             } catch (\Throwable $th) {
                 //throw $th;
                 // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
@@ -61,8 +69,8 @@ class ServiciosTransporteController extends Controller
                     "ERROR sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte",
                     json_encode($request['unidad']) . json_encode(['pasajeros' => $request['pasajeros']]),
                 ];
-    
-                DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
+
+                // DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
                 return ['code' => 500, 'newId' => "nada mano", 'response' => strval("Ha ocurrido un error al insertar el registro")];
                 // return ['code' => 500, 'response' => strval($th)];
             }
