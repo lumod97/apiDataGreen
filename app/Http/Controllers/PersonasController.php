@@ -21,26 +21,26 @@ class PersonasController extends Controller
         ];
 
         $data = DB::select("SELECT
-        IDCODIGOGENERAL idcodigogeneral,
-        NRODOCUMENTO dni,
-        CONCAT(TRIM(NOMBRES), ' ', TRIM(A_PATERNO), ' ', TRIM(A_MATERNO)) nombresApellidos,
-        SEXO sexo,
-        PROCEDENCIA procedencia,
-        DESCRIPCION_VIA direccion,
-        CASE
-            WHEN ESTADO = 1 THEN
-                'ACTIVO'
-            ELSE 'INACTIVO'
-        END estado,
-        'EMP' planilla,
-        CASE
-            WHEN AUTOGENERADOAFP = '' OR AUTOGENERADOAFP = NULL THEN
-                'OBTENER CUSSP'
-            ELSE AUTOGENERADOAFP
-        END cusp,
-        LISTA_NEGRA observado,
-        'NO' rendimiento
-    FROM AgricolaSanJuan_2020..PERSONAL_GENERAL PG WHERE pg.NRODOCUMENTO=?", $params);
+            IDCODIGOGENERAL idcodigogeneral,
+            NRODOCUMENTO dni,
+            CONCAT(TRIM(NOMBRES), ' ', TRIM(A_PATERNO), ' ', TRIM(A_MATERNO)) nombresApellidos,
+            SEXO sexo,
+            PROCEDENCIA procedencia,
+            DESCRIPCION_VIA direccion,
+            CASE
+                WHEN ESTADO = 1 THEN
+                    'ACTIVO'
+                ELSE 'INACTIVO'
+            END estado,
+            'EMP' planilla,
+            CASE
+                WHEN AUTOGENERADOAFP = '' OR AUTOGENERADOAFP = NULL THEN
+                    'OBTENER CUSSP'
+                ELSE AUTOGENERADOAFP
+            END cusp,
+            LISTA_NEGRA observado,
+            'NO' rendimiento
+        FROM AgricolaSanJuan_2020..PERSONAL_GENERAL PG WHERE pg.NRODOCUMENTO=?", $params);
         return  $data;
     }
 }

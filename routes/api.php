@@ -89,6 +89,9 @@ Route::group(['prefix'=>'capacitaciones'], function (){
     Route::get('get_capacitaciones', 'App\Http\Controllers\capacitacionesController@getCapacitaciones');
 });
 
+Route::get('prueba_endpoint', 'App\Http\Controllers\pruebaController@apiPrueba');
+Route::post('prueba_coordenadas', 'App\Http\Controllers\pruebaController@obtenerCoordenadasRedonda');
+
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();

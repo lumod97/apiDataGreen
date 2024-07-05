@@ -244,7 +244,7 @@ class CodigoBarrasController extends Controller
 
                 file_put_contents('raw\\back.pdf', $pdfContent);
 
-                $output = trim('raw\\plantilla_fotochecks_EDITABLE_#' . '.pdf');
+                $output = trim('raw/plantilla_fotochecks_EDITABLE_#' . '.pdf');
                 $outputPrev = trim('raw\\plantilla_fotochecks_EDITABLE_#_prev' . '.pdf');
 
                 $pdf = new PDFTK($template_file_route);
@@ -255,6 +255,21 @@ class CodigoBarrasController extends Controller
                 $command = "pdftk {$save_file_route_prev} background raw\\back.pdf output {$save_file_route} compress";
                 exec($command, $output, $return_var);
 
+
+                // Ruta relativa y absoluta
+                $relativePath = public_path($save_file_route);
+                $absolutePath = 'X:/Luiggi/' . basename($save_file_route);
+
+                // Copiar el archivo
+                if (copy($relativePath, $absolutePath)) {
+                    // echo "El archivo se ha copiado exitosamente a {$absolutePath}.";
+                } else {
+                    // echo "Error al copiar el archivo a {$absolutePath}.";
+                }
+
+
+                // return $url . '/' . $save_file_route;
+                return $absolutePath;
                 // Ruta a la carpeta donde deseas almacenar los archivos temporales dentro de tu aplicación web
                 $tempFolder = public_path('/temp');
 
@@ -262,11 +277,13 @@ class CodigoBarrasController extends Controller
                 $pdf = new PdfToImg(public_path($save_file_route));
 
                 // Ajustamos la resolución de la imagen a generar 
-                $pdf->setResolution(300);
+                $pdf->setResolution(1080);
 
                 // Convierte la primera página del PDF en una imagen PNG
                 $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
                 $pdf->setPage(1)->saveImage(public_path($outputDir));
+
+                // return $url.$outputDir;
 
                 $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
 
@@ -276,12 +293,12 @@ class CodigoBarrasController extends Controller
 
                 //     $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
                 //     $codigos[$i] = $data[$i]->codigo_general;
-                // }
-                unlink($save_file_route_prev);
-                unlink('raw\\back.pdf');
-                unlink($save_file_route);
-                unlink($imageFilePath);
-                unlink(public_path($outputDir));
+                // // }
+                // unlink($save_file_route_prev);
+                // unlink('raw\\back.pdf');
+                // unlink($save_file_route);
+                // unlink($imageFilePath);
+                // unlink(public_path($outputDir));
                 // unlink($outputFileName);
             }
 

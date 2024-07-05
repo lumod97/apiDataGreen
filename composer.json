@@ -19,6 +19,7 @@
         "mpdf/mpdf": "^8.2",
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
+        "spatie/geocoder": "^3.16",
         "spatie/image-optimizer": "^1.7",
         "spatie/pdf-to-image": "^2.3",
         "tecnickcom/tc-lib-barcode": "^2.2",
