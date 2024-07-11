@@ -2,27 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\EmailSJ;
 use Barryvdh\DomPDF\Facade\Pdf;
 use mikehaertl\pdftk\Pdf as PDFTK;
 use Com\Tecnick\Barcode\Barcode;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Imagick;
-use TCPDF;
 
 use Spatie\PdfToImage\Pdf as PdfToImg;
 use ZipArchive;
-
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\SnappyPdf as SPDF;
-use Illuminate\Support\Facades\Storage;
-use Knp\Snappy\Image;
-use Intervention\Image\ImageManagerStatic as ImageOpt;
-
-
 
 class CodigoBarrasController extends Controller
 {
@@ -165,8 +152,16 @@ class CodigoBarrasController extends Controller
                 }
             }
         }
-        $zip = new ZipArchive();
-        $zipFileName = 'imagenes_generadas.zip';
+        $zip = new ZipArchive;
+        $zipDir = public_path('raw');
+        $zipFileName = $zipDir . DIRECTORY_SEPARATOR . 'imagenes_generadas.zip';
+
+        // Asegúrate de que el directorio exista
+        if (!file_exists($zipDir)) {
+            mkdir($zipDir, 0755, true); // Crea el directorio con permisos adecuados
+            return response()->json(['message' => 'Que fue mano'], 500);
+        }
+
         if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
             return response()->json(['message' => 'No se pudo crear el archivo ZIP'], 500);
         }
@@ -181,11 +176,12 @@ class CodigoBarrasController extends Controller
         foreach ($images as $imagePath) {
             unlink($imagePath);
         }
-        return response()->download($zipFileName)->deleteFileAfterSend(true);
+        return response()->download($zipFileName)->deleteFileAfterSend(false);
     }
 
     public function generarBarras(Request $request)
     {
+        // // // // ESTO SE PONE SOLO PARA PRUEBAS, SE ENVIA DIRECTAMENTE UN ARCHIVO PARA PODER REALIZAR LA IMPRESIÓN RÁPIDA
         set_time_limit(111200); // Establece el tiempo máximo de ejecución a 120 segundos
         try {
             $images = [];
@@ -195,8 +191,6 @@ class CodigoBarrasController extends Controller
                 json_encode($request['codigos']),
                 $request['idplanilla'],
             ];
-
-            // return json_encode($request['codigos']);
 
             $data = DB::select("exec Datagreen..sp_obtener_data_fotocheck ?, ?, ?", $params);
             // return $data;
@@ -213,7 +207,6 @@ class CodigoBarrasController extends Controller
                     if ($key == 'encriptado') {
                         // Crear una instancia de la biblioteca de código de barras
                         $barcode = new Barcode();
-
                         // Generar un código de barras de tipo Code 128
                         $barcodeObject = $barcode->getBarcodeObj('C128', $value, -4, -40, 'black', array(-2, -2, -2, -2));
 
@@ -231,10 +224,7 @@ class CodigoBarrasController extends Controller
                     }
                 }
 
-                // return $params;
-
-
-                $dompdf = Pdf::loadView('formats.pdfFotocheck', $params)->setPaper('a4', 'portrait');
+                $dompdf = Pdf::loadView('formats.pdfFotocheck', $params)->setPaper('a4', 'landscape');
 
                 $dompdf->getOptions()->setIsRemoteEnabled(true);
                 $dompdf->getOptions()->isPhpEnabled(true);
@@ -244,7 +234,7 @@ class CodigoBarrasController extends Controller
 
                 file_put_contents('raw\\back.pdf', $pdfContent);
 
-                $output = trim('raw\\plantilla_fotochecks_EDITABLE_#' . '.pdf');
+                $output = trim('raw/plantilla_fotochecks_EDITABLE_#' . '.pdf');
                 $outputPrev = trim('raw\\plantilla_fotochecks_EDITABLE_#_prev' . '.pdf');
 
                 $pdf = new PDFTK($template_file_route);
@@ -252,65 +242,51 @@ class CodigoBarrasController extends Controller
                 $save_file_route = str_replace('#', trim($data[$i]->codigo_general), $output);
                 $result = $pdf->fillForm($params)->needAppearances()->saveAs(public_path($save_file_route_prev));
 
+                // PONER EL ARCHIVO BACK DE BACKGROUND AL PDF
                 $command = "pdftk {$save_file_route_prev} background raw\\back.pdf output {$save_file_route} compress";
                 exec($command, $output, $return_var);
-
+                // // Comando para rotar el PDF 90 grados
+                $save_file_route_rotated = $save_file_route . ".pdf";
+                $rotate_command = "pdftk {$save_file_route} cat 1-endwest output {$save_file_route_rotated}";
+                exec($rotate_command, $output, $return_var);
                 // Ruta a la carpeta donde deseas almacenar los archivos temporales dentro de tu aplicación web
                 $tempFolder = public_path('/temp');
-
                 // Crea una instancia de Pdf
-                $pdf = new PdfToImg(public_path($save_file_route));
-
+                $pdf = new PdfToImg(public_path($save_file_route_rotated));
                 // Ajustamos la resolución de la imagen a generar 
-                $pdf->setResolution(300);
-
+                $pdf->setResolution(1080);
                 // Convierte la primera página del PDF en una imagen PNG
-                $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
-                $pdf->setPage(1)->saveImage(public_path($outputDir));
-
-                $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
-
-                $codigos[$i] = $data[$i]->codigo_general;
-                // } else {
-                //     $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
-
-                //     $images[$i]['ruta'] = base64_encode(file_get_contents(public_path($outputDir)));
-                //     $codigos[$i] = $data[$i]->codigo_general;
-                // }
-                unlink($save_file_route_prev);
-                unlink('raw\\back.pdf');
-                unlink($save_file_route);
-                unlink($imageFilePath);
-                unlink(public_path($outputDir));
-                // unlink($outputFileName);
+                $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.jpg';
+                // $pdf->setPage(1)->saveImage(public_path($outputDir));
+                if ($pdf->setPage(1)->saveImage(public_path($outputDir))) {
+                    $images[$i]['ruta'] = public_path($outputDir);
+                    $images[$i]['file_name'] = 'fotocheck_'.$data[$i]->codigo_general . '.jpg';
+                }
             }
 
+            // GENERAR ZIP PARA ENVIAR A DATAGREEN Y PROCESAR IMPRESIONES
+            // Ruta donde se guardará el archivo ZIP
+            $zipFileName = 'example.zip';
+            $zipFilePath = public_path('raw'.DIRECTORY_SEPARATOR.$zipFileName);
+            // ESTO ES SOLO PARA EL DEBUG
 
-            $datos = [
-                'images' => $images
-            ];
-
-            $dompdf = Pdf::loadView('formats.pdfCodigosBarras', $datos)->setPaper('a4', 'portrait');
-            $dompdf->getOptions()->setIsRemoteEnabled(true);
-            $dompdf->getOptions()->isPhpEnabled(true);
-            $dompdf->getOptions()->setDpi(200);
-            $dompdf->render();
-
-            $pdfContentGenerated = $dompdf->output();
-            $outputFolder = 'raw\\fotochecksGenerados.pdf';
-
-            file_put_contents($outputFolder, $pdfContentGenerated);
-            // return $outputFolder;
-
-            // Genera y transmite el PDF
-            // return $dompdf->stream('FotochecksGenerados.pdf');
-            // return $codigos;
-            $usuario = isset($request['usuario_genera']) ? $request['usuario_genera'] : '72450801';
-            // return $usuario;
-            $query = "EXEC DataGreen..sp_insertar_registro_fotocheck_entregado '" . json_encode($codigos) . "', " . $usuario . "";
-            // return $query;
-            DB::statement($query);
-            return $url . '/' . $outputFolder;
+            $zip = new ZipArchive;
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+                // Añade archivos al ZIP
+                foreach ($images as $file) {
+                    $zip->addFile($file['ruta'], $file['file_name']);
+                }
+                // Cierra el ZIP
+                $zip->close();
+            }
+            // unlink($save_file_route_prev);
+            // unlink('raw\\back.pdf');
+            // unlink($save_file_route);
+            // unlink($imageFilePath);
+            // unlink($save_file_route_rotated);
+            // unlink(public_path($outputDir));
+            
+            return response()->download($zipFilePath)->deleteFileAfterSend(false);
         } catch (\Exception $th) {
             return $th;
         }
@@ -332,11 +308,6 @@ class CodigoBarrasController extends Controller
                 ['ruta' => 'data:image/jpeg;base64,' . base64_encode(file_get_contents(public_path('pdf_formats/fotocheck.jpg'))),],
             ],
         ];
-
-        // Renderizar la vista a HTML
-        // $html = view('formats.pdfCodigosBarras', $datos)->render();
-
-        // $dompdf = Pdf::loadView('formats.pdfCodigosBarras', $datos)->setPaper('a4', 'portrait');
         $dompdf = Pdf::loadView('formats.pdfFotocheck', $datos)->setPaper('a4', 'portrait');
         // $dompdf->loadHtml($html);
         $options = $dompdf->getOptions();
