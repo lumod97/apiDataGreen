@@ -10,6 +10,80 @@ class pruebaController extends Controller
 {
     public function apiPrueba(Request $request)
     {
+        // OBTENEMOS LA DATA PARA PODER REALIZAR LA INSERCIÓN DE LA LOCALIDAD AL MOMENTO DE CONVERTIR DE COORDENADAS DESDE MAPS GEOLOCALITATION API
+        // $dbdata = DB::select("SELECT * from DataGreenMovil..ServiciosTransporteDetalleTest WHERE IdServicioTransporte = '03700000006R' and Item = '6'");
+        $dbdata = DB::select("SELECT * from DataGreenMovil..ServiciosTransporteDetalleTest WHERE IdServicioTransporte = '03700000006R'");
+
+        # Reemplaza 'YOUR_API_KEY' con tu clave de API de Google Maps
+        $client = new \GuzzleHttp\Client([
+            'verify' => false,
+            'headers' => [
+                'User-Agent' => 'ApiDataGreen/1.0 (luiggigmd.97@gmail.com)',
+                'Referer' => '56.10.3.24:8000'
+            ]
+        ]);
+        $url = 'https://maps.googleapis.com/maps/api/geocode/json';
+
+        foreach ($dbdata as $key => $value) {
+            // echo $value;
+
+            if ($value->coordenadas_marca !== '') {
+                $coordinatesArray = explode(',', $value->coordenadas_marca);
+                // PRUEBA DE IMPRESIÓN DE PARÁMETROS
+                $response = $client->get($url, [
+                    'query' => [
+                        'latlng' => $coordinatesArray[0] . "," . $coordinatesArray[1],
+                        'key' => "AIzaSyDp5ZkC71arspYxkBJDrU5WMLrczWW3y2w",
+                    ]
+                ]);
+
+                $data = json_decode($response->getBody(), true);
+
+                if ($data['status'] == 'OK') {
+
+                    // Procesar la respuesta para encontrar el administrative_area_level_3
+                    $adminAreaLevel3 = "sin_localidad";
+                    if (!empty($data['results'])) {
+                        $i = 0;
+                        // for($i = 0; $i < sizeof($data['results']) ; $i++){
+                        // foreach ($data['results'][$i]['address_components'] as $component) {
+                        foreach ($data['results'] as $component) {
+                            // return $component['address_components'][$i]['types'];
+                            // if (in_array('administrative_area_level_3', $component['types'])) {
+                            if (in_array('administrative_area_level_3', $component['address_components'][$i]['types'])) {
+                                // echo json_encode().'<br>';
+                                // $adminAreaLevel3 = $component['long_name'];
+                                $adminAreaLevel3 = $component['address_components'][0]['long_name'];
+                                // break;
+                                // echo 'holi';
+                            }
+                        }
+                        // }
+                        $i++;
+                    }
+                }
+            } else {
+                $adminAreaLevel3 = "sin_coordenadas";
+            }
+            
+            
+            DB::unprepared("UPDATE DataGreenMovil..ServiciosTransporteDetalleTest SET localidad_marca = '".$adminAreaLevel3."' WHERE IdServicioTransporte = '03700000006R' AND Item = '".$value->Item."'");
+            // return $adminAreaLevel3;
+            // return $data;
+            // return $data['results'][0]['address_components'][2]['long_name'];
+            // echo $data['results'][0]['address_components'][2]['short_name'] . '<br>';
+            echo $adminAreaLevel3 . '<br>';
+            // return $data['results'][0]['formatted_address'];
+            // } else {
+            //     return null;
+            // }
+            // END PRUEBA DE IMPRESIÓN DE PARÁMETROS
+        }
+
+        return "";
+
+
+
         # Reemplaza 'YOUR_API_KEY' con tu clave de API de Google Maps
         $client = new \GuzzleHttp\Client([
             'verify' => false,
@@ -50,7 +124,7 @@ class pruebaController extends Controller
         // }
 
         // return ['code' => 200, 'mensaje' => 'Proceso exitoso'];
-        
+
         $client = new \GuzzleHttp\Client([
             'verify' => false,
             'headers' => [
@@ -69,8 +143,8 @@ class pruebaController extends Controller
         // COORDENADAS DE PRUEBA PARA TUMAN
         // $latitude = "-6.740373513187599";
         // $longitude = "-79.70908382882749";
-        $dbdata = DB::select("SELECT * from DataGreenMovil..ServiciosTransporteDetalleTest WHERE IdServicioTransporte = '04T00000000F' and Item = '4'");
-        
+        $dbdata = DB::select("SELECT * from DataGreenMovil..ServiciosTransporteDetalleTest WHERE IdServicioTransporte = '03700000006R' and Item = '4'");
+
         foreach ($dbdata as $key => $value) {
             $coordinatesArray = explode(',', $dbdata[$key]->coordenadas_marca);
             // echo $key.', ';
@@ -98,9 +172,9 @@ class pruebaController extends Controller
             // }else if(isset($address['town'])){
             //     $localidad_marca = $address['town'];
             // }
-            // $queryCoord = "UPDATE DataGreenMovil..ServiciosTransporteDetalleTest SET localidad_marca = '".$localidad_marca."' WHERE IdServicioTransporte = '04T00000000F' AND Item = '".$dbdata[$key]->Item."'";
+            // $queryCoord = "UPDATE DataGreenMovil..ServiciosTransporteDetalleTest SET localidad_marca = '".$localidad_marca."' WHERE IdServicioTransporte = '03700000006R' AND Item = '".$dbdata[$key]->Item."'";
             // // echo $queryCoord;
-            // DB::unprepared("UPDATE DataGreenMovil..ServiciosTransporteDetalleTest SET localidad_marca = '".$localidad_marca."' WHERE IdServicioTransporte = '04T00000000F' AND Item = '".$dbdata[$key]->Item."'");
+            // DB::unprepared("UPDATE DataGreenMovil..ServiciosTransporteDetalleTest SET localidad_marca = '".$localidad_marca."' WHERE IdServicioTransporte = '03700000006R' AND Item = '".$dbdata[$key]->Item."'");
         }
         return '';
 
@@ -121,7 +195,7 @@ class pruebaController extends Controller
 
     public function obtenerCoordenadasRedonda(Request $request)
     {
-        
+
         // PRIMERAS COORDENADAS: OBTENIDAS DE ANDROID
         $latitud_central = -6.656976666666666;
         $longitud_central = -79.42912666666666;
@@ -195,5 +269,4 @@ class pruebaController extends Controller
             'distancia' => $distancia
         ]);
     }
-
 }

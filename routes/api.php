@@ -32,6 +32,10 @@ Route::group(['prefix' => 'tareos'], function () {
     Route::post('insertar_tareos', 'App\Http\Controllers\TareosController@insertarTareos');
 });
 
+Route::group(['prefix' => 'transportes'], function () {
+    Route::post('obtener_localidades', 'App\Http\Controllers\ServiciosTransporteController@obtenerLocalidades');
+});
+
 Route::group(['prefix' => 'personas'], function () {
     Route::get('obtener_personas_con_observacion', 'App\Http\Controllers\PersonasController@obtenerPersonasConObservacion');
     Route::post('obtener_data_persona', 'App\Http\Controllers\PersonasController@obtenerDataPersona');
@@ -89,7 +93,8 @@ Route::group(['prefix'=>'capacitaciones'], function (){
     Route::get('get_capacitaciones', 'App\Http\Controllers\capacitacionesController@getCapacitaciones');
 });
 
-Route::get('prueba_endpoint', 'App\Http\Controllers\pruebaController@apiPrueba');
+// Route::get('prueba_endpoint', 'App\Http\Controllers\pruebaController@apiPrueba');
+Route::post('prueba_endpoint', 'App\Http\Controllers\pruebaController@apiPrueba');
 Route::post('prueba_coordenadas', 'App\Http\Controllers\pruebaController@obtenerCoordenadasRedonda');
 
 
