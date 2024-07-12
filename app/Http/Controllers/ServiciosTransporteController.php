@@ -93,7 +93,7 @@ class ServiciosTransporteController extends Controller
             // return $servicio['id_servicio_transporte'];
             // return $selectParams;
     
-            $dbdata = DB::select("select * from select * from DataGreenMovil..trx_ServiciosTransporte_Detalle WHERE IdServicioTransporte = ?", $selectParams);
+            $dbdata = DB::select("select * from DataGreenMovil..trx_ServiciosTransporte_Detalle WHERE IdServicioTransporte = ?", $selectParams);
     
             # Reemplaza 'YOUR_API_KEY' con tu clave de API de Google Maps
             $client = new \GuzzleHttp\Client([
