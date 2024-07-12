@@ -27,7 +27,7 @@ class ServiciosTransporteController extends Controller
                 $request['idDispositivo']
             ];
             $nuevoId = DB::select($newId, $params)[0];
-            File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'UPDATE ID FROM: '. $idServicioTransporte . ' TO: '.$nuevoId->Detalle. PHP_EOL);
+            File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'UPDATE ID FROM: ' . $idServicioTransporte . ' TO: ' . $nuevoId->Detalle . PHP_EOL);
             return ['code' => 500, 'newId' => $nuevoId->Detalle, 'response' => strval("AGREGADO CORRECTAMENTE CON ID DIFERENTE")];
         } else {
             // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
@@ -78,6 +78,89 @@ class ServiciosTransporteController extends Controller
         // } catch (\Throwable $th) {
 
         // }
+    }
+
+    public function obtenerLocalidades(Request $request)
+    {
+        $dataRequest = $request->all();
+        // return count($request->all());
+        // RECORREMOS EL ARRAY PARA PODER REALIZAR EL PROCESO SERVICIO POR SERVICIO DE ACUERDO A LOS SELECCIONADOS DESDE DATAGRIDVIEW DE DATAGREEN
+        foreach($dataRequest as $servicio){
+            $selectParams = [
+                $servicio['id_servicio_transporte']
+            ];
+    
+            // return $servicio['id_servicio_transporte'];
+            // return $selectParams;
+    
+            $dbdata = DB::select("select * from DataGreenMovil..ServiciosTransporteDetalleTest WHERE IdServicioTransporte = ?", $selectParams);
+    
+            # Reemplaza 'YOUR_API_KEY' con tu clave de API de Google Maps
+            $client = new \GuzzleHttp\Client([
+                'verify' => false,
+                'headers' => [
+                    'User-Agent' => 'ApiDataGreen/1.0 (luiggigmd.97@gmail.com)',
+                    'Referer' => '56.10.3.24:8000'
+                ]
+            ]);
+            $url = 'https://maps.googleapis.com/maps/api/geocode/json';
+    
+            foreach ($dbdata as $key => $value) {
+                // echo $value;
+    
+                if ($value->coordenadas_marca !== '') {
+                    $coordinatesArray = explode(',', $value->coordenadas_marca);
+                    // PRUEBA DE IMPRESIÓN DE PARÁMETROS
+                    $response = $client->get($url, [
+                        'query' => [
+                            'latlng' => $coordinatesArray[0] . "," . $coordinatesArray[1],
+                            'key' => "AIzaSyDp5ZkC71arspYxkBJDrU5WMLrczWW3y2w",
+                        ]
+                    ]);
+    
+                    $data = json_decode($response->getBody(), true);
+    
+                    if ($data['status'] == 'OK') {
+                        // Procesar la respuesta para encontrar el administrative_area_level_3
+                        $location = "sin_localidad";
+                        if (!empty($data['results'])) {
+                            $i = 0;
+                            foreach ($data['results'] as $component) {
+                                if (in_array('administrative_area_level_3', $component['address_components'][$i]['types'])) {
+                                    $location = $component['address_components'][0]['long_name'];
+                                }
+                            }
+                            $i++;
+                        }
+                    }
+                } else {
+                    $location = "sin_coordenadas";
+                }
+    
+                $updateParams = [
+                    $location,
+                    $servicio["id_servicio_transporte"],
+                    $value->Item
+                ];
+                // return $updateParams;
+    
+                DB::statement("UPDATE DataGreenMovil..ServiciosTransporteDetalleTest SET localidad_marca = ? WHERE IdServicioTransporte = ? AND Item = ?", $updateParams);
+    
+                // INSERTAMOS LOS LOGS EN LA BASE DE DATOS
+                // $logParams = [
+                //     $servicio["momento"],
+                //     $servicio["mac"],
+                //     $servicio["id_usuario"],
+                //     $servicio["aplicativo"],
+                //     $servicio["descripcion"],
+                //     $servicio["id_servicio_transporte"]
+                // ];
+    
+                // DB::statement("insert into Datagreen..Logs values(?, ?, ?, ?, ?, ?)", $logParams);
+            }
+        }
+
+        return 'holisuelto';
     }
 
     public function getLogs()
