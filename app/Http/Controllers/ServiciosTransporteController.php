@@ -144,7 +144,7 @@ class ServiciosTransporteController extends Controller
                 ];
                 // return $updateParams;
     
-                DB::statement("UPDATE select * from DataGreenMovil..trx_ServiciosTransporte_Detalle SET localidad_marca = ? WHERE IdServicioTransporte = ? AND Item = ?", $updateParams);
+                DB::statement("UPDATE DataGreenMovil..trx_ServiciosTransporte_Detalle SET localidad_marca = ? WHERE IdServicioTransporte = ? AND Item = ?", $updateParams);
     
                 // INSERTAMOS LOS LOGS EN LA BASE DE DATOS
                 // $logParams = [
