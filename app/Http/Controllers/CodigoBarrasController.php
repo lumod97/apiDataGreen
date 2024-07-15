@@ -181,8 +181,13 @@ class CodigoBarrasController extends Controller
 
     public function generarBarras(Request $request)
     {
+        // $zipFileName = 'example.zip';
+        // $zipFilePath = public_path('raw'.DIRECTORY_SEPARATOR.$zipFileName);
+        // return response()->download($zipFilePath)->deleteFileAfterSend(false);
         // // // // ESTO SE PONE SOLO PARA PRUEBAS, SE ENVIA DIRECTAMENTE UN ARCHIVO PARA PODER REALIZAR LA IMPRESIÓN RÁPIDA
-        set_time_limit(111200); // Establece el tiempo máximo de ejecución a 120 segundos
+        // set_time_limit(111200); // Establece el tiempo máximo de ejecución a 120 segundos
+        set_time_limit(1200000); // Establece el tiempo máximo de ejecución a 120 segundos
+
         try {
             $images = [];
             $codigos = [];
