@@ -199,7 +199,8 @@ class CodigoBarrasController extends Controller
         if (isset($request['tipo_fotocheck'])) {
             $tipoFotocheck = $request['tipo_fotocheck'];
         } else {
-            return 'No se ha enviado un tipo de fotocheck para generar';
+            $tipoFotocheck = 'F01';
+            // return 'No se ha enviado un tipo de fotocheck para generar';
         }
 
         try {
