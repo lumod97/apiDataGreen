@@ -105,17 +105,18 @@
             font-family: MontserratBold !important;
             line-height: 12px;
         }
-
-
+        
+        
         .text-cargo {
             position: absolute;
             font-family: Montserrat !important;
             color: #ffffff;
-            bottom: 4mm;
+            bottom: 3.7mm;
             left: 0;
             right: 0;
             font-size: 12px;
             text-align: center;
+            line-height: 9px;
             /* Alinea el texto al centro */
         }
 
