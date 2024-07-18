@@ -261,7 +261,7 @@ class CodigoBarrasController extends Controller
                     unlink($pathpdf_rotated);
                     unlink($pathpdf);
                     break;
-                case 'F02':
+                case 'F01':
                     $template_file_route = trim('pdf_formats\\plantilla_fotochecks_EDITABLE.pdf');
                     $url = url('/');
                     for ($i = 0; $i < count($data); $i++) {
@@ -332,7 +332,7 @@ class CodigoBarrasController extends Controller
                     break;
 
                     // case 'F02':
-                case 'F01':
+                case 'F02':
                     // DEFINIMOS UN ARRAY CON LAS RUTAS DE LAS FOTOS DE CADA TRABAJADOR
                     $images = [];
                     // INICIA PROCESO DE GENERACIÓN DE IMÁGENES A PARTIR DE VISTA BLADE
