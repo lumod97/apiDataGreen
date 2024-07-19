@@ -215,6 +215,13 @@ class CodigoBarrasController extends Controller
             switch ($tipoFotocheck) {
                 case 'F03':
                     for ($i = 0; $i < count($data); $i++) {
+                        $logParams = [
+                            $data[$i]->codigo_general,
+                            $request['usuario']
+                        ];
+
+                        DB::statement("INSERT INTO DataGreen..RRHH_FOTOCHECKS_ENTREGADOS VALUES(?,GETDATE(),(SELECT Dni FROM DataGreen..Usuarios WHERE Usuario = ?))", $logParams);
+
                         $params = [];
                         foreach ($data[$i] as $key => $value) {
                             $code = $data[$i]->codigo_general;
@@ -266,6 +273,16 @@ class CodigoBarrasController extends Controller
                     $template_file_route = trim('pdf_formats\\plantilla_fotochecks_EDITABLE.pdf');
                     $url = url('/');
                     for ($i = 0; $i < count($data); $i++) {
+
+                        // INSERTAMOS UN LOG BIEN LOGUEAO
+                        $logParams = [
+                            $data[$i]->codigo_general,
+                            $request['usuario']
+                        ];
+
+                        DB::statement("INSERT INTO DataGreen..RRHH_FOTOCHECKS_ENTREGADOS VALUES(?,GETDATE(),(SELECT Dni FROM DataGreen..Usuarios WHERE Usuario = ?))", $logParams);
+
+                        
                         $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
 
                         $params = [];
@@ -300,6 +317,7 @@ class CodigoBarrasController extends Controller
                         $pdfContent = $dompdf->output();
 
                         file_put_contents('raw\\back.pdf', $pdfContent);
+                        unlink($imageFilePath);
 
                         $output = trim('raw/plantilla_fotochecks_EDITABLE_#' . '.pdf');
                         $outputPrev = trim('raw\\plantilla_fotochecks_EDITABLE_#_prev' . '.pdf');
@@ -328,8 +346,12 @@ class CodigoBarrasController extends Controller
                         if ($pdf->setPage(1)->saveImage(public_path($outputDir))) {
                             $images[$i]['ruta'] = public_path($outputDir);
                             $images[$i]['file_name'] = 'fotocheck_' . $data[$i]->codigo_general . '.jpg';
+
+                            // unlink($outputPrev);
                         }
                     }
+                    unlink($save_file_route);
+                    unlink($save_file_route_rotated);
                     break;
 
                     // case 'F02':
@@ -343,6 +365,13 @@ class CodigoBarrasController extends Controller
                     ];
                     // INICIAMOS LA ANIDACIÓN DE 2 FOREACH
                     foreach ($data as $indexTrabajador => $trabajador) {
+                        $logParams = [
+                            $trabajador->codigo_general,
+                            $request['usuario']
+                        ];
+
+                        DB::statement("INSERT INTO DataGreen..RRHH_FOTOCHECKS_ENTREGADOS VALUES(?,GETDATE(),(SELECT Dni FROM DataGreen..Usuarios WHERE Usuario = ?))", $logParams);
+
                         $nombre = ucfirst(strtolower(trim(explode(' ', $trabajador->nombres)[0])));
                         $apellido = ucfirst(strtolower(trim(explode(' ', $trabajador->apellidos)[0])));
                         // DEFINIMOS LAS PALABRAS QUE DEBEN MANTENERSE EN LOWERCASE
@@ -363,10 +392,16 @@ class CodigoBarrasController extends Controller
 
                         // Volver a unir las palabras en un solo string
                         $cargo = implode(' ', $wordsLower);
+                        $dni = $trabajador->dni;;
+                        if (!file_exists(public_path('pdf_formats\\images\\fotos_personal\\'.str_replace(' ', '', $dni).'.png'))) {
+                            $dni = '00000000';
+                        }else{
+                            $dni = $trabajador->dni;
+                        }
                         $trabajadorArray = [
                             "nombre" => $nombre . ' ' . $apellido,
                             "codigo" => $trabajador->codigo_general,
-                            "dni" => $trabajador->dni,
+                            "dni" => $dni,
                             "cargo" => $cargo,
                             "foto" => $trabajador->foto,
                             "codigo_barras" => ''
