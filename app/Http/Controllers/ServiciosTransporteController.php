@@ -42,7 +42,7 @@ class ServiciosTransporteController extends Controller
                 json_encode($request['unidad']) . json_encode(['pasajeros' => $request['pasajeros']]),
             ];
 
-            DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
+            // DB::statement("insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)", $logParams);
             $jsonPasajeros = json_encode(['pasajeros' => $request['pasajeros']]);
             // $queryUnidad = "INSERT INTO DataGreenMovil..trx_ServiciosTransporte VALUES(" . $request['unidad'] . ")";
             // DB::unprepared($queryUnidad);
