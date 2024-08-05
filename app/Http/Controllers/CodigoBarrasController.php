@@ -220,7 +220,9 @@ class CodigoBarrasController extends Controller
                             $request['usuario']
                         ];
 
-                        DB::statement("INSERT INTO DataGreen..RRHH_FOTOCHECKS_ENTREGADOS VALUES(?,GETDATE(),(SELECT Dni FROM DataGreen..Usuarios WHERE Usuario = ?))", $logParams);
+                        if($request['usuario'] !== 'LMORETTI'){
+                            DB::statement("INSERT INTO DataGreen..RRHH_FOTOCHECKS_ENTREGADOS VALUES(?,GETDATE(),(SELECT Dni FROM DataGreen..Usuarios WHERE Usuario = ?))", $logParams);
+                        }
 
                         $params = [];
                         foreach ($data[$i] as $key => $value) {
@@ -280,7 +282,9 @@ class CodigoBarrasController extends Controller
                             $request['usuario']
                         ];
 
-                        DB::statement("INSERT INTO DataGreen..RRHH_FOTOCHECKS_ENTREGADOS VALUES(?,GETDATE(),(SELECT Dni FROM DataGreen..Usuarios WHERE Usuario = ?))", $logParams);
+                        if($request['usuario'] !== 'LMORETTI'){
+                            DB::statement("INSERT INTO DataGreen..RRHH_FOTOCHECKS_ENTREGADOS VALUES(?,GETDATE(),(SELECT Dni FROM DataGreen..Usuarios WHERE Usuario = ?))", $logParams);
+                        }
 
                         
                         $outputDir = '/raw' . '/fotocheck_' . $data[$i]->codigo_general . '.png';
@@ -370,7 +374,9 @@ class CodigoBarrasController extends Controller
                             $request['usuario']
                         ];
 
-                        DB::statement("INSERT INTO DataGreen..RRHH_FOTOCHECKS_ENTREGADOS VALUES(?,GETDATE(),(SELECT Dni FROM DataGreen..Usuarios WHERE Usuario = ?))", $logParams);
+                        if($request['usuario'] !== 'LMORETTI'){
+                            DB::statement("INSERT INTO DataGreen..RRHH_FOTOCHECKS_ENTREGADOS VALUES(?,GETDATE(),(SELECT Dni FROM DataGreen..Usuarios WHERE Usuario = ?))", $logParams);
+                        }
 
                         $nombre = ucfirst(strtolower(trim(explode(' ', $trabajador->nombres)[0])));
                         $apellido = ucfirst(strtolower(trim(explode(' ', $trabajador->apellidos)[0])));
