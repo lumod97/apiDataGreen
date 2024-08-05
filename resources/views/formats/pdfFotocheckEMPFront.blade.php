@@ -69,9 +69,9 @@
 
         .image-center {
             position: absolute !important;
-            top: 8.7mm !important;
+            top: 8.2mm !important;
             /* top: 18 mm !important; */
-            width: 38mm;
+            width: 36mm;
             left: 50% !important;
             transform: translateX(-50%) !important;
         }
