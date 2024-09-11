@@ -36,7 +36,7 @@ class TareosController extends Controller
                 $request["mac"],
                 $request["imei"]
             ];
-            $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovil..sp_Dgm_Tareos_TransferirTareo_V3 ?, ?, ?;", $params);
+            $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovil..sp_Dgm_Tareos_TransferirTareo_V4 ?, ?, ?;", $params);
             // throw new Exception('SUAVE MANOOOOOOO');
 
             // return $data;
@@ -47,7 +47,8 @@ class TareosController extends Controller
 
             // RETORNAMOS EL RESPONSE
             if($response->code == '500'){
-                throw new Exception($response->message);
+                return ['code' => $response->code, 'response' => $data];
+                // throw new Exception($response);
             }else if($response->code == '200'){
                 return ['code' => $response->code, 'response' => $data];
             }

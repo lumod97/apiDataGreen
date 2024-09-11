@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('get-data-compras','App\Http\Controllers\KPIController@getCompras');
+
+
 
 Route::post('get-users','App\Http\Controllers\ServiciosTransporteController@getServiciosTransporte');
 Route::post('insertar_servicios_transporte','App\Http\Controllers\ServiciosTransporteController@getServiciosTransporte');
