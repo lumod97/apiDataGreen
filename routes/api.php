@@ -33,6 +33,7 @@ Route::group(['prefix' => 'minigreen'], function(){
 
 Route::group(['prefix' => 'tareos'], function () {
     Route::post('insertar_tareos', 'App\Http\Controllers\TareosController@insertarTareos');
+    Route::post('extornar_tareos', 'App\Http\Controllers\TareosController@extornarTareos');
 });
 
 Route::group(['prefix' => 'transportes'], function () {
