@@ -15,7 +15,7 @@ class ServiciosTransporteController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 // Ejecutar el procedimiento almacenado
-                DB::statement('EXEC sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte_Test ?, ?, ?, ?', [
+                DB::statement('EXEC DataGreenMovil.. sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte_Test ?, ?, ?, ?', [
                     json_encode(['pasajeros' => $request->pasajeros]),
                     $request->unidad,
                     $request->mac,
