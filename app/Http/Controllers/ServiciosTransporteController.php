@@ -13,6 +13,10 @@ class ServiciosTransporteController extends Controller
     {
 
         try {
+            date_default_timezone_set("America/Lima");
+            $currentDate = date("Y-m-d H:i:s");
+            File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['unidad']) . ' | '. $request->mac . ' | '.$request->usuario . ' | '. json_encode(['pasajeros' => $request['pasajeros']]),) . PHP_EOL);
+
             DB::transaction(function () use ($request) {
                 // Ejecutar el procedimiento almacenado
                 DB::statement('EXEC DataGreenMovil.. sp_Dgm_ServiciosTransporte_TransferirRegistroTransporte_Test ?, ?, ?, ?', [
@@ -45,12 +49,10 @@ class ServiciosTransporteController extends Controller
         }
 
 
-
+        
         // // try {
-        // // SETEAMOS LA ZONA HORARIA PARA OBTENER LA FECHA Y HORA CORRECTAS
-        // date_default_timezone_set("America/Lima");
+            // // SETEAMOS LA ZONA HORARIA PARA OBTENER LA FECHA Y HORA CORRECTAS
         // // OBTENEMOS LA FECHA Y HORA PARA LA INSERCIÓN DE LOS LOGS
-        // $currentDate = date("Y-m-d H:i:s");
 
         // $idServicioTransporte = $request['idServicioTransporte'];
         // $existsServicioTransporte = DB::select("select count(*) response from DatagreenMovil..trx_ServiciosTransporte where Id= '" . $idServicioTransporte . "';")[0];
@@ -66,7 +68,6 @@ class ServiciosTransporteController extends Controller
         //     return ['code' => 500, 'newId' => $nuevoId->Detalle, 'response' => strval("AGREGADO CORRECTAMENTE CON ID DIFERENTE")];
         // } else {
         //     // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
-        //     File::append(storage_path('logs/log_transportes.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['unidad']) . json_encode(['pasajeros' => $request['pasajeros']]),) . PHP_EOL);
 
         //     // INSERTAMOS LOS LOGS EN LA BASE DE DATOS
         //     $logParams = [
