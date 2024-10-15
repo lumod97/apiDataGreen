@@ -17,6 +17,12 @@ Route::get('get-data-compras','App\Http\Controllers\KPIController@getCompras');
 
 
 
+Route::get('get-dni-data/{id}','App\Http\Controllers\DNIController@getDataDNI');
+
+
+Route::get('get-ean14-fijo/{numero_fijo}-{cantidad}','App\Http\Controllers\EAN14GeneratorController@generarCodigoEAN14ConVerificadorFijo');
+
+
 Route::post('get-users','App\Http\Controllers\ServiciosTransporteController@getServiciosTransporte');
 Route::post('insertar_servicios_transporte','App\Http\Controllers\ServiciosTransporteController@getServiciosTransporte');
 Route::get('get-logs','App\Http\Controllers\ServiciosTransporteController@getLogs');
