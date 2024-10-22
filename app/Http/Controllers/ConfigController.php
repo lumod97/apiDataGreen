@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
-
 class ConfigController extends Controller
 {
     public function obtenerDataInicial(Request $request){
@@ -70,4 +69,19 @@ class ConfigController extends Controller
             }
         }
     }
+
+    public function registrarLogs(Request $request){
+        $params = [
+            $request['fecha'],
+            $request['mac'],
+            $request['usuario'],
+            // $request['aplicativo'],
+            'Chronos Mobile',
+            $request['accion'], // descripcion
+            $request['condicion'] . ' ' . $request['demora']
+        ];
+
+        DB::statement("EXEC DataGreen..spLogs ?, ?, ?, ?, ?, ?");
+    }
+
 }
