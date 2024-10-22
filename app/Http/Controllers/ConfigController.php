@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+
 
 class ConfigController extends Controller
 {
@@ -40,7 +42,9 @@ class ConfigController extends Controller
                 $request['mac']
             ];
 
-            $query = "UPDATE Cns_Terminales SET Ip = ?, Descripcion = ?, IdPuerta = ?, FechaActualiza = GETDATE() WHERE Mac = ?";
+            $query = "UPDATE Datagreen..Cns_Terminales SET Ip = ?, Descripcion = ?, IdPuerta = ?, FechaActualiza = GETDATE() WHERE Mac = ?";
+
+            File::append(storage_path('logs/log_chronitos.txt'), PHP_EOL . 'ERROR'. PHP_EOL . json_encode($params));
 
             DB::statement($query, $params);
 

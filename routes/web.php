@@ -14,5 +14,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('formats.pdfCertificadoTrabajo');
+    // return view('formats.pdfCertificadoTrabajo');
+    try{
+        return view('downloadHome');
+    } catch (\Exception $th) {
+        return $th;
+    }
 });
+
+Route::get('/download/{filename}', function ($filename) {
+    $filePath = storage_path("app/public/files/{$filename}"); // Ruta específica donde se almacenan los archivos
+
+    if (file_exists($filePath)) {
+        return response()->download($filePath);
+    } else {
+        abort(404, "Archivo no encontrado.");
+    }
+})->name('download');
