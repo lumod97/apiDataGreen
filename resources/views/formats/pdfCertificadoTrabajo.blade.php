@@ -24,7 +24,8 @@
             </h4>
         </center>
         <h4 class="texto_normal" style="margin-top: 10%;">
-            El (la) Sr. (Sra.) {{ $nombres }} con DNI {{ $dni }}, ha laborado en nuestra empresa desde el {{ $diaD }} de {{ $mesD }} del {{ $anioD }} al {{ $diaH }} de {{ $mesH }} del {{ $anioH }}, siendo su cargo {{ $cargo }}.
+            El (la) Sr. (Sra.) Luiggi con DNI <b> 72450801</b>, ha laborado en nuestra empresa desde el 05 de Septiembre del 2023 al 31 de Diciembre del 2024, siendo su cargo Analista Programador.
+            
         </h4>
         <h4 class="texto_normal" style="margin-top: 5%;">
             Durante su permanencia ha demostrado responsabilidad y honestidad en las labores recomendadas.
