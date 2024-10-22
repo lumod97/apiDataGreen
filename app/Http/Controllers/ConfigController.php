@@ -32,7 +32,19 @@ class ConfigController extends Controller
         $newId = DB::select("SELECT MAX(Id) + 1 newId FROM Datagreen..Cns_Terminales")[0]->newId;
 
         if($exists > 0){
-            return ['code' => 208, 'response' => ['message' => 'El terminal se ha registrado con éxito en los servidores.', 'deviceId' => $newId]];
+
+            $params = [
+                $request['ip'],
+                $request['descripcion'],
+                $request['id_puerta'],
+                $request['mac']
+            ];
+
+            $query = "UPDATE Cns_Terminales SET Ip = ?, Descripcion = ?, IdPuerta = ?, FechaActualiza = GETDATE() WHERE Mac = ?";
+
+            DB::statement($query, $params);
+
+            return ['code' => 208, 'response' => ['message' => 'El terminal se ha actualizado con éxito en los servidores, por ya existir.', 'deviceId' => $newId]];
         }else{
             // return $newId;
             $params = [
