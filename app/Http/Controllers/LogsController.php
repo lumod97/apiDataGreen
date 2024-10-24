@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\File;
 
 class LogsController extends Controller
 {
+
+    public function transferirAlmuerzos(Request $request){
+        File::append(storage_path('logs/log_comedor.txt'), PHP_EOL . json_encode($request) . PHP_EOL);
+    }
+
     public function transferirLogs(Request $request)
     {
         try {

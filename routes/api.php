@@ -60,6 +60,10 @@ Route::group(['prefix' => 'logs'], function () {
     Route::post('transferir_logs', 'App\Http\Controllers\LogsController@transferirLogs');
 });
 
+Route::group(['prefix' => 'comedor'], function () {
+    Route::post('enviar_data', 'App\Http\Controllers\LogsController@transferirAlmuerzos');
+});
+
 Route::group(['prefix' => 'sistemas'], function () {
     Route::group(['prefix' => 'soporte'], function () {
         Route::post('transferir_mantenimientos', 'App\Http\Controllers\Sistemas\MantenimientosController@transferirMantenimientos');
