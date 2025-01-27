@@ -29,7 +29,7 @@ class LogsController extends Controller
             
             // File::append(storage_path('logs/log_chronitos_logs.txt'), PHP_EOL . json_encode($params) . PHP_EOL . $logs[0]->mac . PHP_EOL);
 
-            File::append(storage_path('logs/log_chronitos_logs.txt'), PHP_EOL . $params . PHP_EOL);
+            File::append(storage_path('logs/log_chronitos_logs.txt'), PHP_EOL . json_encode($params) . PHP_EOL);
 
             return ['code' => 200, 'response' => $params];
         } catch (\Throwable $th) {
