@@ -15,7 +15,7 @@ class PdfController extends Controller
         try {
             $filesString = "";
             if ($request['template'] === 'FORMATO_DE_VACACIONES') {
-                if($request['agrupar'] === '1'){
+                if(isset($request['agrupar']) && $request['agrupar'] === '1'){
                     $fechaDesde = $request['fechaDesde'];
                     $fechaHasta = $request['fechaHasta'];
                 }else{
