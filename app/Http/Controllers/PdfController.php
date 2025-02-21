@@ -15,7 +15,14 @@ class PdfController extends Controller
         try {
             $filesString = "";
             if ($request['template'] === 'FORMATO_DE_VACACIONES') {
-                $query = "exec Datagreen..sp_obtenerVacacionesParaFormatoPDF 'vista_normal', '***', '', '', '" . json_encode($request['movimientos']) . "'";
+                if($request['agrupar'] === '1'){
+                    $fechaDesde = $request['fechaDesde'];
+                    $fechaHasta = $request['fechaHasta'];
+                }else{
+                    $fechaDesde = '';
+                    $fechaHasta = '';
+                }
+                $query = "exec Datagreen..sp_obtenerVacacionesParaFormatoPDF 'vista_normal', '***', '".$fechaDesde."', '".$fechaHasta."', '" . json_encode($request['movimientos']) . "'";
                 $data = DB::select($query);
             } elseif ($request['template'] === 'FORMATO_COMPENSACION_HORAS_EXTRA') {
                 $query = "exec Datagreen..sp_obtenerCompensacionHorasExtraParaFormatoPDF 'vista_normal', '***', '', '', '" . json_encode($request['movimientos']) . "'";
