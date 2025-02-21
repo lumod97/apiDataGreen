@@ -16,11 +16,11 @@ class PdfController extends Controller
             $filesString = "";
             if ($request['template'] === 'FORMATO_DE_VACACIONES') {
                 if($request['agrupar'] === '1'){
-                    $fechaDesde = $request['fechaDesde'];
-                    $fechaHasta = $request['fechaHasta'];
-                }else{
                     $fechaDesde = '';
                     $fechaHasta = '';
+                }else{
+                    $fechaDesde = $request['fechaDesde'];
+                    $fechaHasta = $request['fechaHasta'];
                 }
                 $query = "exec Datagreen..sp_obtenerVacacionesParaFormatoPDF 'vista_normal', '***', '".$fechaDesde."', '".$fechaHasta."', '" . json_encode($request['movimientos']) . "'";
                 $data = DB::select($query);
