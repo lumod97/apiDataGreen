@@ -144,6 +144,7 @@ class TareosController extends Controller
             $response = $data[0];
 
             // return $response;
+            File::append(storage_path('logs/log_answer.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . $response . PHP_EOL);
 
             // RETORNAMOS EL RESPONSE
             if ($response->code == '500') {
@@ -186,7 +187,7 @@ class TareosController extends Controller
             // Supongamos que la operación se realiza correctamente
             return response()->json([
                 'success' => true,
-                'message' => 'Tareos extornados con éxito. MODIFICACION ULTIMA'
+                'message' => 'Tareos extornados con éxito.'
             ], 200);
         } catch (\Exception $e) {
             // Manejo de errores opcional, pero asegurando una respuesta positiva
