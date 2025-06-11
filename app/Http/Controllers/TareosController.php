@@ -148,8 +148,10 @@ class TareosController extends Controller
             // RETORNAMOS EL RESPONSE
             if ($response->code == '500') {
                 return ['code' => $response->code, 'response' => $data];
+                File::append(storage_path('logs/log_500.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . $data . PHP_EOL);
                 // throw new Exception($response);
             } else if ($response->code == '200') {
+                File::append(storage_path('logs/log_success.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . $data . PHP_EOL);
                 return ['code' => $response->code, 'response' => $data];
             }
         } catch (\Throwable $th) {
@@ -157,7 +159,7 @@ class TareosController extends Controller
 
             // GUARDAMOS EL ERROR Y EL LOG EN UN ARCHIVO DE TEXTO
             $errorText = strval($th);
-            File::append(storage_path('logs/logs_apis.txt'), PHP_EOL . $errorText . PHP_EOL);
+            File::append(storage_path('logs/logs_apis.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- error: ' . $errorText . PHP_EOL);
             File::append(storage_path('logs/log_tareos.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['tareos'])) . PHP_EOL);
 
             // GUARDAMOS EL LOG EN LA BASE DE DATOS
