@@ -144,7 +144,7 @@ class TareosController extends Controller
             $response = $data[0];
 
             // return $response;
-            File::append(storage_path('logs/log_answer.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . $response . PHP_EOL);
+            //File::append(storage_path('logs/log_answer.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . $data . PHP_EOL);
 
             // RETORNAMOS EL RESPONSE
             if ($response->code == '500') {
