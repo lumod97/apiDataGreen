@@ -205,7 +205,7 @@ class TareosController extends Controller
             // Supongamos que la operación se realiza correctamente
             return response()->json([
                 'success' => true,
-                'message' => 'Tareos extornados con éxito.'
+                'message' => 'Tareos extornados con éxito. MODIFICACION ULTIMA'
             ], 200);
         } catch (\Exception $e) {
             // Manejo de errores opcional, pero asegurando una respuesta positiva
