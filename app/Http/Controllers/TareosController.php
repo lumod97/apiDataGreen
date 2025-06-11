@@ -149,10 +149,10 @@ class TareosController extends Controller
             // RETORNAMOS EL RESPONSE
             if ($response->code == '500') {
                 return ['code' => $response->code, 'response' => $data];
-                File::append(storage_path('logs/log_500.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . stripslashes(json_encode($data)) . PHP_EOL);
+                File::append(storage_path('logs/log_500.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . strval(json_encode($data)) . PHP_EOL);
                 // throw new Exception($response);
             } else if ($response->code == '200') {
-                File::append(storage_path('logs/log_success.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . stripslashes(json_encode($data)) . PHP_EOL);
+                File::append(storage_path('logs/log_success.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . strval(json_encode($data)) . PHP_EOL);
                 return ['code' => $response->code, 'response' => $data];
             }
         } catch (\Throwable $th) {
