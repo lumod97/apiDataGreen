@@ -13,6 +13,12 @@ class PersonasController extends Controller
         return ['code' => 200, 'response' => $data];
     }
 
+    public function obtenerPersonasMejorado()
+    {
+        $data = DB::select("SELECT * FROM DataGreenTest..sp_Cns_DescargarPersonas_mejorado;");
+        return ['code' => 200, 'response' => $data];
+    }
+
     public function obtenerDataPersona(Request $request)
     {
 
