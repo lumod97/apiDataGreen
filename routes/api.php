@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('get-data-compras','App\Http\Controllers\KPIController@getCompras');
+Route::get('sync-boletas','App\Http\Controllers\SyncBoleterosController@syncDatos');
 
 
 
@@ -48,8 +49,11 @@ Route::group(['prefix' => 'transportes'], function () {
 
 Route::group(['prefix' => 'personas'], function () {
     Route::get('obtener_personas_con_observacion_mejorado', 'App\Http\Controllers\PersonasController@obtenerPersonasMejorado');
+    Route::get('obtener_personas_mejorado', 'App\Http\Controllers\PersonasController@obtenerPersonasMejorado');
     Route::get('obtener_personas_con_observacion', 'App\Http\Controllers\PersonasController@obtenerPersonasConObservacion');
     Route::post('obtener_data_persona', 'App\Http\Controllers\PersonasController@obtenerDataPersona');
+    Route::get('obtener_personas', 'App\Http\Controllers\PersonasController@obtenerPersonas');
+    Route::post('insertar_registros_sanitario', 'App\Http\Controllers\PersonasController@insertarRegistrosSanitario');
 
 });
 
