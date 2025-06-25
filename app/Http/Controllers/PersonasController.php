@@ -13,6 +13,31 @@ class PersonasController extends Controller
         return ['code' => 200, 'response' => $data];
     }
 
+    public function obtenerPersonas()
+    {
+        $data = DB::select("SELECT * FROM DataGreenMovil..mst_personas;");
+        return ['code' => 200, 'response' => $data];
+    }
+
+    public function obtenerPersonasMejorado()
+    {
+        $fechaActual = date('Y-m-d');
+        $data = DB::select("exec DataGreen..sp_Cns_DescargarPersonasConTareos 1, ?", [$fechaActual]);
+        return ['code' => 200, 'response' => $data];
+    }
+
+    public function insertarRegistrosSanitario(Request $request)
+    {
+        $params = [
+            $request['id_usuario'],
+            $request['fecha_hora'],
+            $request['tipo_movimiento']
+        ];
+
+        DB::unprepared("INSERT INTO DataGreenMovil..registro_movimientos VALUES(?,?,?)", $params);
+        return ['code' => 200, 'response' => 'ok'];
+    }
+
     public function obtenerDataPersona(Request $request)
     {
 
