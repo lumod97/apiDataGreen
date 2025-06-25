@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-
+use PDO;
 
 class TareosController extends Controller
 {
@@ -112,13 +113,21 @@ class TareosController extends Controller
 
     public function insertarTareos(Request $request)
     {
-        // SETEAMOS LA ZONA HORARIA PARA OBTENER LA FECHA Y HORA CORRECTAS
         date_default_timezone_set("America/Lima");
-        // OBTENEMOS LA FECHA Y HORA PARA LA INSERCIÓN DE LOS LOGS
         $currentDate = date("Y-m-d H:i:s");
+
+        // Registrar parámetros recibidos en el log
+        $logData = "Momento: $currentDate ----- parametros: " . json_encode($request->all(), JSON_UNESCAPED_UNICODE) . PHP_EOL;
+        File::append(storage_path('logs/log_tareos.txt'), $logData);
+
         try {
-            // INSERTAMOS LOS LOGS EN UN ARCHIVO DE TEXTO
-            File::append(storage_path('logs/log_tareos.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['tareos'])) . PHP_EOL);
+            // Validar que los parámetros obligatorios estén presentes
+            if (!$request->has(['tareos', 'mac', 'imei'])) {
+                return response()->json([
+                    'code' => 400,
+                    'message' => 'Faltan parámetros obligatorios'
+                ], 400);
+            }
 
             // INSERTAMOS LOS LOGS EN LA BASE DE DATOS
             // $logParams = [
@@ -132,16 +141,23 @@ class TareosController extends Controller
 
             // ENVIAMOS LOS TAREOS PARA SU INSERCIÓN
             $params = [
-                json_encode(['tareos' => $request['tareos']]),
-                $request["mac"],
-                $request["imei"]
+                json_encode(['tareos' => $request['tareos']], JSON_UNESCAPED_UNICODE),
+                $request->input("mac"),
+                $request->input("imei")
             ];
-            $data = DB::select("SET NOCOUNT ON; EXEC DataGreenMovil..sp_Dgm_Tareos_TransferirTareo_V4 ?, ?, ?;", $params);
-            // throw new Exception('SUAVE MANOOOOOOO');
 
-            // return $data;
+            $pdo = DB::getPdo();
+            $stmt = $pdo->prepare('EXEC DataGreenMovilTest..sp_Dgm_Tareos_TransferirTareo_V4 ?, ?, ?');
+            $stmt->execute($params);
 
-            $response = $data[0];
+            $results = [];
+            $response = [];
+
+            $error_table = -1;
+
+            do{
+                $results[] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }while ($stmt->nextRowset());
 
             // return $response;
             //File::append(storage_path('logs/log_answer.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . $data . PHP_EOL);
@@ -155,28 +171,39 @@ class TareosController extends Controller
                 File::append(storage_path('logs/log_success.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- DATA: ' . stripslashes(json_encode($data)) . PHP_EOL);
                 return ['code' => $response->code, 'response' => $data];
             }
-        } catch (\Throwable $th) {
-            // return $th;
 
             // GUARDAMOS EL ERROR Y EL LOG EN UN ARCHIVO DE TEXTO
             $errorText = strval($th);
             File::append(storage_path('logs/logs_apis.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- error: ' . $errorText . PHP_EOL);
             File::append(storage_path('logs/log_tareos.txt'), PHP_EOL . 'Momento: ' . $currentDate . ' ----- parametros: ' . stripslashes(json_encode($request['tareos'])) . PHP_EOL);
 
-            // GUARDAMOS EL LOG EN LA BASE DE DATOS
-            // $logParams = [
-            //     $request["mac"],
-            //     $request["user_login"],
-            //     $request["app"],
-            //     "ERROR sp_Dgm_Tareos_TransferirTareo_V3",
-            //     $request["parametros"]
-            // ];
-            // DB::statement("SET NOCOUNT ON; insert into Datagreen..Logs values(GETDATE(), ?, ?, ?, ?, ?)",$logParams);
 
-            // RETORNAMOS EL RESPONSE
-            return ['code' => 500, 'response' => $errorText];
+            return response()->json([
+                'code' => $response['code'],
+                'message' => $response['message'] ?? '',
+                'data' => $response
+            ], ($response['code'] == 200) ? 200 : 500);
+        } catch (QueryException $ex) {
+            $errorText = "SQL Error: " . $ex->getMessage();
+            File::append(storage_path('logs/logs_apis.txt'), PHP_EOL . 'SQL: ' . $errorText . PHP_EOL);
+            return response()->json([
+                'code' => 500,
+                'message' => 'Error en la base de datos',
+                'error' => $errorText
+            ], 500);
+        } catch (\Throwable $ex) {
+            // $errorText = "Error general: " . $ex->getMessage();
+            $response = response()->json([
+                'code' => 500,
+                'message' => $ex->getMessage(),
+                'error' => $ex->getMessage()
+            ], 500);
+            File::append(storage_path('logs/logs_apis.txt'), PHP_EOL . $ex->getMessage() . PHP_EOL);
+            return $response;
         }
     }
+
+
 
     public function extornarTareos(Request $request)
     {
@@ -187,7 +214,7 @@ class TareosController extends Controller
             // Supongamos que la operación se realiza correctamente
             return response()->json([
                 'success' => true,
-                'message' => 'Tareos extornados con éxito.'
+                'message' => 'Tareos extornados con éxito. MODIFICACION ULTIMA'
             ], 200);
         } catch (\Exception $e) {
             // Manejo de errores opcional, pero asegurando una respuesta positiva
