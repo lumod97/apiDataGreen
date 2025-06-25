@@ -93,6 +93,38 @@ return [
             'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
         ],
 
+        'mysql_destino_1' => [
+            'driver' => 'mysql',
+            'host' => env('MYSQL_DESTINO_HOST_1', '56.30.1.251'),
+            'port' => env('MYSQL_DESTINO_PORT_1', '3306'),
+            'database' => env('MYSQL_DESTINO_DATABASE_1', 'boletas'),
+            'username' => env('MYSQL_DESTINO_USERNAME_1', 'root'),
+            'password' => env('MYSQL_DESTINO_PASSWORD_1', 'inicio001'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::ATTR_TIMEOUT => 180, // ⏱ Timeout de 60 segundos
+            ]) : [],
+        ],
+
+        'mysql_destino_2' => [
+            'driver' => 'mysql',
+            'host' => env('MYSQL_DESTINO_HOST_2', '56.30.1.252'),
+            'port' => env('MYSQL_DESTINO_PORT_2', '3306'),
+            'database' => env('MYSQL_DESTINO_DATABASE_2', 'boletas'),
+            'username' => env('MYSQL_DESTINO_USERNAME_2', 'root'),
+            'password' => env('MYSQL_DESTINO_PASSWORD_2', 'inicio001'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
+
     ],
 
     /*
@@ -125,7 +157,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
